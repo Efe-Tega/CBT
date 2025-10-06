@@ -22,7 +22,7 @@ A modern **Computer-Based Test (CBT) System** built with **Laravel 11** and **Ta
 -   **Backend:** Laravel 11
 -   **Frontend:** Tailwind CSS
 -   **Database:** MySQL
--   **Authentication:** Laravel Breeze (Optional)
+-   **Authentication:** Laravel Breeze
 
 ---
 
