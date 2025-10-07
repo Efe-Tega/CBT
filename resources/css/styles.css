@@ -1,0 +1,90 @@
+/* App-specific minimal styles layered over Tailwind */
+:root {
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI,
+        Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+
+    /* Theme palette */
+    --color-primary: #112d4e; /* Primary */
+    --color-secondary: #3f72af; /* Secondary */
+    --color-bg: #f9f7f7; /* Background */
+    --color-muted: #dbe2ef; /* Muted / surfaces */
+    --color-on-primary: #ffffff;
+    --color-on-secondary: #ffffff;
+    --color-on-bg: #0f172a; /* slate-900 fallback for text */
+}
+
+body {
+    font-family: var(--font-sans);
+}
+
+/* Prevent code from shrinking too small */
+pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Basic theme wiring to complement Tailwind utility classes */
+body.theme {
+    background-color: var(--color-bg);
+    color: var(--color-on-bg);
+}
+
+/* Themed header/footer helpers */
+.header-theme {
+    background-color: var(--color-muted);
+    border-color: var(--color-secondary);
+}
+.footer-theme {
+    color: #64748b;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+}
+.btn-primary:hover {
+    filter: brightness(0.95);
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-on-secondary);
+}
+.btn-secondary:hover {
+    filter: brightness(0.95);
+}
+
+.btn-muted {
+    background-color: var(--color-muted);
+    color: var(--color-primary);
+}
+.btn-muted:hover {
+    filter: brightness(0.97);
+}
+
+/* Surfaces */
+.card {
+    background-color: #ffffff;
+    border-color: var(--color-muted);
+}
+.card-header {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+}
+.badge-active {
+    background-color: color-mix(
+        in srgb,
+        var(--color-secondary) 20%,
+        transparent
+    );
+    color: #e6f0ff;
+    border-color: color-mix(in srgb, var(--color-secondary) 40%, transparent);
+}
+
+/* Forms */
+.input-focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-primary);
+    border-color: var(--color-primary);
+}
