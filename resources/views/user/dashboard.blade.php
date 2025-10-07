@@ -4,7 +4,7 @@
     <header class="header-theme border-b">
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="logo.png" alt="Logo" class="w-10 h-10" />
+                <img src="{{ asset('assets/logo/logo.png') }}" alt="Logo" class="w-10 h-10" />
                 <div>
                     <h1 class="text-lg font-semibold leading-tight">
                         Student Dashboard
@@ -38,7 +38,7 @@
                     <p><span class="text-slate-500">Class:</span> SS3</p>
                 </div>
                 <div class="bg-[var(--color-bg)] px-4 py-3">
-                    <a href="index.html?examId=chem"
+                    <a href="{{ route('index') }}"
                         class="inline-flex items-center justify-center btn-secondary text-sm rounded px-3 py-2">Start
                         Chemistry exam</a>
                 </div>
