@@ -75,6 +75,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const questions = @json($questions);
+        const saveUrl = "{{ route('save.answer') }}";
+        const csrfToken = "{{ csrf_token() }}";
 
         let currentIndex = 0;
         const answers = {};
@@ -139,6 +141,29 @@ ${q.question_text}
         `;
         }
 
+        // Save answer via AJAX
+        async function saveAnswer(questionId, selectedOption) {
+            try {
+                await fetch(saveUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken,
+                    },
+                    body: JSON.stringify({
+                        question_id: questionId,
+                        answer: selectedOption,
+                    }),
+                });
+
+                console.log(`Saved Q${questionId}: ${selectedOption}`);
+
+            } catch (error) {
+                console.error("Error saving answer:", error);
+
+            }
+        }
+
         // Save selected answer when a radio is clicked
         container.addEventListener('change', (e) => {
             if (e.target.type === 'radio') {
@@ -148,6 +173,9 @@ ${q.question_text}
                 // Mark as answered in navigator
                 const navBtn = navigator.children[currentIndex];
                 navBtn.classList.add('answered');
+
+                // Save immediately
+                saveAnswer(q.id, e.target.value);
             }
         });
 
