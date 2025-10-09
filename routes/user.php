@@ -7,5 +7,5 @@ Route::middleware('auth')
     ->controller(UserController::class)
     ->group(function () {
         Route::get('/user/dashboard', 'dashboard')->name('user.dashboard');
-        Route::get('/user/index', 'index')->name('index');
+        Route::get('/subjects/{id}', 'userQuestions')->name('user.questions');
     });

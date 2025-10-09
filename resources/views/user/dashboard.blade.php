@@ -27,6 +27,24 @@
         <!-- Card grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <!-- Card component -->
+            @foreach ($subjects as $subject)
+                <div class="bg-white border border-slate-300 rounded shadow-sm overflow-hidden">
+                    <div class="card-header px-4 py-2 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold">{{ $subject->name }}</h3>
+                        <span
+                            class="text-[10px] uppercase bg-emerald-500/20 text-emerald-200 border border-emerald-300/40 rounded px-2 py-0.5">Active</span>
+                    </div>
+                    <div class="p-4 text-sm space-y-2">
+                        <p><span class="text-slate-500">Subject:</span> {{ $subject->name }}</p>
+                        <p><span class="text-slate-500">Class:</span> {{ $subject->class->name }}</p>
+                    </div>
+                    <div class="bg-[var(--color-bg)] px-4 py-3">
+                        <a href="{{ route('user.questions', ['id' => $subject->id]) }}"
+                            class="inline-flex items-center justify-center btn-secondary text-sm rounded px-3 py-2">Start
+                            Chemistry exam</a>
+                    </div>
+                </div>
+            @endforeach
             <div class="bg-white border border-slate-300 rounded shadow-sm overflow-hidden">
                 <div class="card-header px-4 py-2 flex items-center justify-between">
                     <h3 class="text-sm font-semibold">Chemistry</h3>
@@ -38,7 +56,7 @@
                     <p><span class="text-slate-500">Class:</span> SS3</p>
                 </div>
                 <div class="bg-[var(--color-bg)] px-4 py-3">
-                    <a href="{{ route('index') }}"
+                    <a href=""
                         class="inline-flex items-center justify-center btn-secondary text-sm rounded px-3 py-2">Start
                         Chemistry exam</a>
                 </div>

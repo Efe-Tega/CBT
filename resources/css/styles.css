@@ -124,6 +124,7 @@ body.theme {
 .nav-btn.answered {
     background: #e7ffd7;
     border-color: #d2eab3;
+    color: #000;
 }
 
 /* Buttons */
