@@ -31,7 +31,7 @@
                     </h1>
                 </div>
 
-                <form id="loginForm" action="{{ route('login') }}" method="POST" class="space-y-4">
+                <form id="loginForm" action="{{ route('login') }}" method="POST" class="space-y-4" autocomplete="off">
                     @csrf
 
                     @if ($errors->any())

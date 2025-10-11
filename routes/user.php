@@ -8,6 +8,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(UserController::class)
         ->group(function () {
             Route::get('/user/dashboard', 'dashboard')->name('user.dashboard');
+            Route::get('/user/logout', 'userLogout')->name('user.logout');
             Route::get('/subjects/{id}', 'userQuestions')->name('user.questions');
         });
 
