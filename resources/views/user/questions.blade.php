@@ -85,6 +85,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         const questions = @json($questions);
         const currentExamId = {{ $exam->id }};
+        const time =
+            "{{ \Carbon\Carbon::parse($session->end_time)->setTimezone('Africa/Lagos')->toIso8601String() }}";
+        const endTime = new Date(time).getTime();
         const progressUrl = `/exam-progress/${currentExamId}`;
         const saveUrl = "{{ route('save.answer') }}";
         const csrfToken = "{{ csrf_token() }}";
@@ -285,28 +288,83 @@ ${q.question_text}
             }
         });
 
-
-
         // Submit button
-        document.getElementById('submitBtn')?.addEventListener('click', async () => {
-            const currentQuestion = questions[currentIndex];
+        async function submitExam(auto = false) {
+            try {
+                const currentQuestion = questions[currentIndex];
 
-            // Handle current question (whether answered or not)
-            if (!answers[currentQuestion.id]) {
-                answers[currentQuestion.id] = null;
-                await saveAnswer(currentExamId, currentQuestion.id, null);
-            } else {
-                await saveAnswer(currentExamId, currentQuestion.id, answers[currentQuestion.id]);
-            }
-
-            // Save unanswered as null before submit 
-            for (const q of questions) {
-                if (!answers[q.id]) {
-                    answers[q.id] = null;
-                    await saveAnswer(currentExamId, q.id, null);
+                // Handle current question (whether answered or not)
+                if (!answers[currentQuestion.id]) {
+                    answers[currentQuestion.id] = null;
+                    await saveAnswer(currentExamId, currentQuestion.id, null);
+                } else {
+                    await saveAnswer(currentExamId, currentQuestion.id, answers[currentQuestion.id]);
                 }
+
+                // Save unanswered as null before submit 
+                for (const q of questions) {
+                    if (!answers[q.id]) {
+                        answers[q.id] = null;
+                        await saveAnswer(currentExamId, q.id, null);
+                    }
+                }
+
+                // Send final submission
+                const response = await fetch("{{ route('exam.finalize') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        exam_id: currentExamId,
+                        auto: auto
+                    })
+                });
+
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
+
+            } catch (error) {
+                console.error("Exam submission failed:", error);
             }
-        })
+        }
+
+        async function updateTimer() {
+            const now = new Date().getTime();
+            const distance = endTime - now;
+
+            if (distance <= 0) {
+                document.getElementById("timer").innerHTML = "Time's up!";
+
+                // Auto-submit
+                await submitExam(true);
+                return;
+            }
+
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const timerEl = document.getElementById("timer")
+
+            timerEl.innerHTML = `${minutes}m ${seconds}s`;
+
+            if (distance <= 5 * 60 * 1000) {
+                timerEl.style.color = "red";
+            } else {
+                timerEl.style.color = "inherit"; // reset to default
+            }
+
+            // Update every second
+            setTimeout(updateTimer, 1000)
+        }
+
+        updateTimer();
+
+        // Manual submit button click
+        document.getElementById('submitBtn')?.addEventListener('click', async () => {
+            await submitExam(false);
+        });
 
         // Initialize
         loadProgress().then(() => {
@@ -317,32 +375,8 @@ ${q.question_text}
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const time =
-            "{{ \Carbon\Carbon::parse($session->end_time)->setTimezone('Africa/Lagos')->toIso8601String() }}";
-        const endTime = new Date(time).getTime();
-        console.log(endTime);
 
-        function updateTimer() {
-            const now = new Date().getTime();
-            const distance = endTime - now;
 
-            if (distance <= 0) {
-                document.getElementById("timer").innerHTML = "Time's up!";
 
-                // Optinally auto-submit exam
-                // document.getElementById("examForm").submit();
-                return;
-            }
-
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById("timer").innerHTML = `${minutes}m ${seconds}s`;
-
-            // Update every second
-            setTimeout(updateTimer, 1000)
-        }
-
-        updateTimer();
     });
 </script>

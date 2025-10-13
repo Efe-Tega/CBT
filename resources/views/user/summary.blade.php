@@ -108,7 +108,7 @@
                     finalizeBtn.disabled = true;
                     finalizeBtn.textContent = "Submitting...";
 
-                    const examId = "{{ $exam_id ?? '' }}";
+                    const examId = "{{ $examId ?? '' }}";
                     console.log(examId);
 
                     const res = await fetch("{{ route('exam.finalize') }}", {

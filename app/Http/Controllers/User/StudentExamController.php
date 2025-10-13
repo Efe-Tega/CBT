@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\ExamSession;
 use App\Models\Question;
 use App\Models\StudentAnswer;
 use Illuminate\Http\Request;
@@ -43,6 +44,8 @@ class StudentExamController extends Controller
             ->where('exam_id', $request->exam_id)
             ->update(['finalized' => true]);
 
+        ExamSession::where('user_id', $user->id)->update(['status' => 'completed']);
+
         Auth::logout();
 
         return redirect('/login')->with('status', 'Exam submitted successfully.');
@@ -74,7 +77,8 @@ class StudentExamController extends Controller
         $user = Auth::user();
         $studentAnswers = StudentAnswer::where('user_id', $user->id)
             ->where('finalized', false)->get();
-        // dd($studentAnswers);
-        return view('user.summary', compact('studentAnswers'));
+
+        $examId = $studentAnswers->first()?->exam_id;
+        return view('user.summary', compact('studentAnswers', 'examId'));
     }
 }
