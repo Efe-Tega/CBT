@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
+use App\Models\ExamSession;
 use App\Models\Question;
 use App\Models\StudentAnswer;
 use App\Models\Subject;
@@ -32,14 +33,39 @@ class UserController extends Controller
 
     public function userQuestions($subj_id)
     {
-        $exam = Exam::where('status', 'active')->firstOrFail();
+        $student = Auth::user();
+        $subject = Subject::findOrFail($subj_id);
+
+        $exam = Exam::where('status', 'active')->firstOrFail(); // returns active CA or Exam
         $questions = Question::where('exam_id', $exam->id)
             ->where('subject_id', $subj_id)
             ->where('is_visible', true)
             ->inRandomOrder()
             ->get();
 
-        return view('user.questions', compact('questions', 'exam'));
+        $existingSession = ExamSession::where('user_id', $student->id)
+            ->where('subject_id', $subj_id)
+            ->where('status', 'in_progress')
+            ->first();
+
+        if (!$existingSession) {
+            $startTime = now();
+            $endTime = now()->addMinutes($subject->duration);
+
+            $existingSession = ExamSession::create([
+                'user_id' => $student->id,
+                'subject_id' => $subj_id,
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+                'status' => 'in_progress',
+            ]);
+        }
+
+        return view('user.questions', [
+            'questions' => $questions,
+            'exam' => $exam,
+            'session' => $existingSession
+        ]);
     }
 
     public function userLogout()

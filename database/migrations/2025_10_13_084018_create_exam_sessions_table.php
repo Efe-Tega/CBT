@@ -20,7 +20,6 @@ return new class extends Migration
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
             $table->enum('status', ['in_progress', 'completed', 'expired']);
-            $table->timestamps();
         });
     }
 

@@ -15,10 +15,7 @@ return new class extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
             $table->enum('title', ['CA', 'Exam']);
-            $table->integer('duration')->nullable();
             $table->integer('total_marks')->nullable();
-            $table->dateTime('start_time')->nullable();
-            $table->dateTime('end_time')->nullable();
             $table->timestamps();
         });
     }
