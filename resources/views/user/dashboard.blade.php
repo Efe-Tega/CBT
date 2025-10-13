@@ -34,10 +34,10 @@
                         <h3 class="text-sm font-semibold">{{ $subject->name }}</h3>
                         @if (in_array($subject->id, $finalizedSubjectIds))
                             <span
-                                class="text-[10px] uppercase bg-rose-500/20 text-rose-200 border border-rose-300/40 rounded px-2 py-0.5">done</span>
+                                class="text-[10px] uppercase bg-red-600 text-rose-200 border border-rose-300 rounded px-2 py-0.5">done</span>
                         @else
                             <span
-                                class="text-[10px] uppercase bg-emerald-500/20 text-emerald-200 border border-emerald-300/40 rounded px-2 py-0.5">Active</span>
+                                class="text-[10px] uppercase bg-green-700 text-emerald-200 border border-green-300/40 rounded px-2 py-0.5">Active</span>
                         @endif
                     </div>
                     <div class="p-4 text-sm space-y-2">
@@ -58,23 +58,6 @@
                     </div>
                 </div>
             @endforeach
-
-            <div class="bg-white border border-slate-300 rounded shadow-sm overflow-hidden">
-                <div class="card-header px-4 py-2 flex items-center justify-between">
-                    <h3 class="text-sm font-semibold">MATHS</h3>
-                    <span
-                        class="text-[10px] uppercase bg-rose-500/20 text-rose-200 border border-rose-300/40 rounded px-2 py-0.5">done</span>
-                </div>
-                <div class="p-4 text-sm space-y-2">
-                    <p><span class="text-slate-500">Subject:</span> MATHS</p>
-                    <p><span class="text-slate-500">Class:</span> SS3</p>
-                </div>
-                <div class="bg-[var(--color-bg)] px-4 py-3">
-                    <a href="index.html?examId=math"
-                        class="inline-flex items-center justify-center btn-secondary text-sm rounded px-3 py-2">Start
-                        MATHS exam</a>
-                </div>
-            </div>
         </div>
     </main>
 @endsection
