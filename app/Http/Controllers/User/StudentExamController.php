@@ -7,6 +7,7 @@ use App\Models\Question;
 use App\Models\StudentAnswer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StudentExamController extends Controller
 {
@@ -23,6 +24,7 @@ class StudentExamController extends Controller
 
         StudentAnswer::updateOrCreate([
             'user_id' => $studentId,
+            'exam_id' => $request->exam_id,
             'question_id' => $questionId,
         ], [
             'selected_answer' => $answer,
@@ -30,5 +32,49 @@ class StudentExamController extends Controller
         ]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function finalizeExam(Request $request)
+    {
+        $user = Auth::user();
+        $studentId = $user->id;
+
+        StudentAnswer::where('user_id', $studentId)
+            ->where('exam_id', $request->exam_id)
+            ->update(['finalized' => true]);
+
+        Auth::logout();
+
+        return redirect('/login')->with('status', 'Exam submitted successfully.');
+    }
+
+    public function getProgress($examId)
+    {
+        try {
+            $user = Auth::user();
+            $studentId = $user->id;
+
+            $answers = StudentAnswer::where('user_id', $studentId)
+                ->where('exam_id', $examId)->get(['question_id', 'selected_answer']);
+
+            return response()->json([
+                'answers' => $answers,
+            ]);
+        } catch (\Throwable $e) {
+            // return full debug info to find the problem
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
+    public function examSummary()
+    {
+        $user = Auth::user();
+        $studentAnswers = StudentAnswer::where('user_id', $user->id)
+            ->where('finalized', false)->get();
+        // dd($studentAnswers);
+        return view('user.summary', compact('studentAnswers'));
     }
 }

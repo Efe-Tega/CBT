@@ -24,25 +24,34 @@
                             <p class="text-xs text-slate-600">English Language</p>
                         </div>
                     </div>
-                    <button id="submitBtn"
-                        class="inline-flex items-center gap-2 btn-primary text-sm font-medium px-4 py-2 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" />
-                        </svg>
-                        Submit
-                    </button>
+                    <a href="{{ route('exam.summary') }}">
+                        <button id="submitBtn"
+                            class="inline-flex items-center gap-2 btn-primary text-sm font-medium px-4 py-2 rounded">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" />
+                            </svg>
+                            Submit
+                        </button>
+                    </a>
                 </div>
             </div>
         </header>
+
+        <!-- Timer -->
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-end">
+            <h2 class="text-lg font-bold">
+                Time Left: <span id="countdown_timer">00:00</span>
+            </h2>
+        </div>
 
         <!-- Main Content -->
         <main class="flex-1">
             <div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-12 gap-6">
                 <!-- Question area -->
                 <section class="md:col-span-8">
+                    <!-- Add this above #questionContainer -->
                     <div id="questionContainer" class="surface shadow-sm">
-
                     </div>
 
 
@@ -75,6 +84,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const questions = @json($questions);
+        const currentExamId = {{ $exam->id }};
+        const progressUrl = `/exam-progress/${currentExamId}`;
         const saveUrl = "{{ route('save.answer') }}";
         const csrfToken = "{{ csrf_token() }}";
 
@@ -91,11 +102,20 @@
             // Build HTML
             container.innerHTML = `
             <div class="px-4 p-3 flex justify-between">
-                <div class="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold"
+                <div class="flex bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 px-2 py-1 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-arrow-left">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                    <a href="{{ route('user.dashboard') }}">Back</a>
+                    
+                </div>
+                <div class="inline-flex items-center rounded-xl px-3 py-1 text-lg font-bold"
                     style="background-color: var(--color-primary); color: #fff;">
                     Question ${index + 1}
                 </div>
-                <span class="font-semibold text-slate-700">Time Left: 12:00</span>
             </div>
 
             <div class="p-4">
@@ -120,7 +140,8 @@ ${q.question_text}
 
             // Re-check selected answer if user navigates back
             if (answers[q.id]) {
-                const selectedRadio = document.querySelector(`input[value="${answers[q.id]}"]`);
+                const selectedRadio = container.querySelector(
+                    `input[name="q${q.id}"][value="${answers[q.id]}"]`);
                 if (selectedRadio) selectedRadio.checked = true;
             }
 
@@ -141,8 +162,41 @@ ${q.question_text}
         `;
         }
 
+        async function loadProgress() {
+            try {
+                const res = await fetch(progressUrl);
+                const data = await res.json();
+
+                // Restore selected options
+                if (data.answers && Array.isArray(data.answers)) {
+                    data.answers.forEach(item => {
+                        const question = questions.find(q => q.id === item.question_id);
+                        if (question) {
+                            answers[question.id] = item.selected_answer;
+
+                            // Mark navigator button only if answered (not null)
+                            // const navBtn = navigator.children[questions.findIndex(q => q.id === item
+                            //     .question_id)];
+                            // if (navBtn) navBtn.classList.add('answered');
+                            const navBtn = navigator.children[questions.indexOf(question)];
+                            if (item.selected_answer && item.selected_answer !== "null") {
+                                navBtn.classList.add('answered');
+                            } else {
+                                navBtn.classList.remove('answered');
+                            }
+                        }
+                    });
+                }
+
+                renderQuestion(currentIndex);
+                console.log("Progress restored successfully");
+            } catch (error) {
+                console.error("Error loading progress:", error);
+            }
+        }
+
         // Save answer via AJAX
-        async function saveAnswer(questionId, selectedOption) {
+        async function saveAnswer(examId, questionId, selectedOption) {
             try {
                 await fetch(saveUrl, {
                     method: "POST",
@@ -151,12 +205,13 @@ ${q.question_text}
                         "X-CSRF-TOKEN": csrfToken,
                     },
                     body: JSON.stringify({
+                        exam_id: examId,
                         question_id: questionId,
                         answer: selectedOption,
                     }),
                 });
 
-                console.log(`Saved Q${questionId}: ${selectedOption}`);
+                console.log(`Saved Q${questionId} for Exam ${examId}: ${selectedOption}`);
 
             } catch (error) {
                 console.error("Error saving answer:", error);
@@ -175,9 +230,37 @@ ${q.question_text}
                 navBtn.classList.add('answered');
 
                 // Save immediately
-                saveAnswer(q.id, e.target.value);
+                saveAnswer(currentExamId, q.id, e.target.value);
             }
         });
+
+        // Mark skipped question when moving next/prev
+        function handleNavigation(newIndex) {
+            const currentQuestion = questions[currentIndex];
+            const hasAnswer = !!answers[currentQuestion.id];
+
+            if (!hasAnswer) {
+                // Save skipped question with null answer
+                answers[currentQuestion.id] = null;
+                saveAnswer(currentExamId, currentQuestion.id, null);
+            }
+
+            currentIndex = newIndex;
+            renderQuestion(currentIndex)
+            updateNavigator();
+        }
+
+        // Update navigator button state
+        function updateNavigator() {
+            questions.forEach((q, i) => {
+                const btn = navigator.children[i];
+                if (answers[q.id]) {
+                    btn.classList.add('answered');
+                } else {
+                    btn.classList.remove('answered');
+                }
+            });
+        }
 
         // Create navigation buttons
         questions.forEach((_, i) => {
@@ -185,29 +268,49 @@ ${q.question_text}
             btn.type = 'button';
             btn.textContent = i + 1;
             btn.className = 'nav-btn';
-            btn.addEventListener('click', () => {
-                currentIndex = i;
-                renderQuestion(currentIndex);
-            });
+            btn.addEventListener('click', () => handleNavigation(i));
             navigator.appendChild(btn);
         });
 
         // Next & Prev
         document.getElementById('nextBtn').addEventListener('click', () => {
             if (currentIndex < questions.length - 1) {
-                currentIndex++;
-                renderQuestion(currentIndex);
+                handleNavigation(currentIndex + 1);
             }
         });
 
         document.getElementById('prevBtn').addEventListener('click', () => {
             if (currentIndex > 0) {
-                currentIndex--;
-                renderQuestion(currentIndex);
+                handleNavigation(currentIndex - 1);
             }
         });
 
-        // Initialize first question
-        renderQuestion(currentIndex)
+
+
+        // Submit button
+        document.getElementById('submitBtn')?.addEventListener('click', async () => {
+            const currentQuestion = questions[currentIndex];
+
+            // Handle current question (whether answered or not)
+            if (!answers[currentQuestion.id]) {
+                answers[currentQuestion.id] = null;
+                await saveAnswer(currentExamId, currentQuestion.id, null);
+            } else {
+                await saveAnswer(currentExamId, currentQuestion.id, answers[currentQuestion.id]);
+            }
+
+            // Save unanswered as null before submit 
+            for (const q of questions) {
+                if (!answers[q.id]) {
+                    answers[q.id] = null;
+                    await saveAnswer(currentExamId, q.id, null);
+                }
+            }
+        })
+
+        // Initialize
+        loadProgress().then(() => {
+            renderQuestion(currentIndex);
+        });
     });
 </script>

@@ -32,17 +32,29 @@
                 <div class="bg-white border border-slate-300 rounded shadow-sm overflow-hidden">
                     <div class="card-header px-4 py-2 flex items-center justify-between">
                         <h3 class="text-sm font-semibold">{{ $subject->name }}</h3>
-                        <span
-                            class="text-[10px] uppercase bg-emerald-500/20 text-emerald-200 border border-emerald-300/40 rounded px-2 py-0.5">Active</span>
+                        @if (in_array($subject->id, $finalizedSubjectIds))
+                            <span
+                                class="text-[10px] uppercase bg-rose-500/20 text-rose-200 border border-rose-300/40 rounded px-2 py-0.5">done</span>
+                        @else
+                            <span
+                                class="text-[10px] uppercase bg-emerald-500/20 text-emerald-200 border border-emerald-300/40 rounded px-2 py-0.5">Active</span>
+                        @endif
                     </div>
                     <div class="p-4 text-sm space-y-2">
                         <p><span class="text-slate-500">Subject:</span> {{ $subject->name }}</p>
                         <p><span class="text-slate-500">Class:</span> {{ $subject->class->name }}</p>
                     </div>
                     <div class="bg-[var(--color-bg)] px-4 py-3">
-                        <a href="{{ route('user.questions', ['id' => $subject->id]) }}"
-                            class="inline-flex items-center justify-center btn-secondary text-sm rounded px-3 py-2">Start
-                            {{ $subject->name }} Exam</a>
+                        @if (in_array($subject->id, $finalizedSubjectIds))
+                            <button class="inline-flex items-center justify-center bg-gray-400 text-sm rounded px-3 py-2"
+                                disabled>Start
+                                {{ $subject->name }} Exam</button>
+                        @else
+                            <a href="{{ route('user.questions', ['id' => $subject->id]) }}"
+                                class="inline-flex items-center justify-center btn-secondary text-sm rounded px-3 py-2">Start
+                                {{ $subject->name }} Exam</a>
+                        @endif
+
                     </div>
                 </div>
             @endforeach

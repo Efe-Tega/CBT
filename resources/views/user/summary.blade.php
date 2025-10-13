@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CBT — Summary of attempt</title>
-    <link rel="stylesheet" href="styles.css" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="bg-slate-100 text-slate-900 font-sans min-h-screen theme">
@@ -44,11 +44,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border-t border-slate-200">
-                            <td class="px-4 py-2">1</td>
-                            <td class="px-4 py-2">Answer saved</td>
-                        </tr>
-                        <tr class="border-t border-slate-200">
+                        @foreach ($studentAnswers as $answer)
+                            <tr class="border-t border-slate-200">
+                                <td class="px-4 py-2">1</td>
+                                <td class="px-4 py-2">{{ $answer->selected_answer ? 'Answer Saved' : 'No Answer' }}</td>
+                            </tr>
+                        @endforeach
+
+                        {{-- <tr class="border-t border-slate-200">
                             <td class="px-4 py-2">2</td>
                             <td class="px-4 py-2">Answer saved</td>
                         </tr>
@@ -63,7 +66,7 @@
                         <tr class="border-t border-slate-200">
                             <td class="px-4 py-2">5</td>
                             <td class="px-4 py-2">Answer saved</td>
-                        </tr>
+                        </tr> --}}
                     </tbody>
                 </table>
             </div>
@@ -88,12 +91,48 @@
                 This attempt must be submitted by
                 <span class="font-medium">Saturday, 2 November 2024, 12:14 PM</span>.
             </div>
-            <button
+            <button id="finalizeExamBtn"
                 class="w-full sm:w-auto inline-flex items-center justify-center btn-secondary text-white text-sm font-semibold rounded px-5 py-2">
                 Submit all and finish
             </button>
         </div>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const finalizeBtn = document.getElementById("finalizeExamBtn");
+
+            finalizeBtn?.addEventListener("click", async () => {
+                try {
+                    // Prevent double-click
+                    finalizeBtn.disabled = true;
+                    finalizeBtn.textContent = "Submitting...";
+
+                    const examId = "{{ $exam_id ?? '' }}";
+                    console.log(examId);
+
+                    const res = await fetch("{{ route('exam.finalize') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            exam_id: examId
+                        })
+                    });
+
+                    if (res.redirected) {
+                        window.location.href = res.url;
+                    } else {
+                        window.location.href = "/loginapp";
+                    }
+                } catch (error) {
+
+                }
+            })
+        });
+    </script>
 </body>
 
 </html>

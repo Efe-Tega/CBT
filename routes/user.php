@@ -13,6 +13,9 @@ Route::middleware('auth')->group(function () {
         });
 
     Route::controller(StudentExamController::class)->group(function () {
+        Route::get('/exam-progress/{examId}', 'getProgress')->name('exam.progress');
+        Route::get('/exam/summary', 'examSummary')->name('exam.summary');
+        Route::post('/exam/final-submit/', 'finalizeExam')->name('exam.finalize');
         Route::post('/save-answer', 'saveAnswer')->name('save.answer');
     });
 });

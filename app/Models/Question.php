@@ -11,4 +11,14 @@ class Question extends Model
     {
         return $this->belongsTo(Exam::class);
     }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
+    public function studentAnswers()
+    {
+        return $this->hasMany(StudentAnswer::class);
+    }
 }
