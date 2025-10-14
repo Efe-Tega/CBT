@@ -29,11 +29,18 @@
                 @auth('teacher')
                     <li>
                         <a href="{{ route('management.questions') }}" class="waves-effect">
-                            <i class="ri-calendar-2-line"></i>
+                            <i class="ri-question-line"></i>
                             <span>Questions</span>
                         </a>
                     </li>
                 @endauth
+
+                <li>
+                    <a href="{{ route('management.classes') }}" class="waves-effect">
+                        <i class="mdi mdi-school"></i>
+                        <span>Classes</span>
+                    </a>
+                </li>
 
                 {{-- <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">

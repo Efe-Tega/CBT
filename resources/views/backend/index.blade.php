@@ -1,4 +1,13 @@
 @extends('backend.backend-main')
+
+@section('title')
+    @auth('teacher')
+        {{ __('Teacher Dashboard') }}
+    @else
+        {{ __('Admin Dashboard') }}
+    @endauth
+@endsection
+
 @section('backend-content')
     <div class="container-fluid">
         <!-- start page title -->

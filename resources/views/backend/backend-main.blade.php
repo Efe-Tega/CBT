@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Dashboard | Upcube - Admin & Dashboard Template</title>
+    <title> @yield('title') | Nasdec Royal School</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesdesign" name="author" />
@@ -13,6 +13,10 @@
     <!-- jquery.vectormap css -->
     <link href="{{ asset('backend/assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css') }}"
         rel="stylesheet" type="text/css" />
+
+    <!-- Lightbox css -->
+    <link href="{{ asset('backend/assets/libs/magnific-popup/magnific-popup.css') }}" rel="stylesheet"
+        type="text/css" />
 
     <!-- DataTables -->
     <link href="{{ asset('backend/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}"
@@ -83,6 +87,10 @@
     </script>
 
     <script src="{{ asset('backend/assets/js/pages/dashboard.init.js') }}"></script>
+    <!-- Magnific Popup-->
+    <script src="{{ asset('backend/assets/libs/magnific-popup/jquery.magnific-popup.min.js') }}"></script>
+    <!-- lightbox init js-->
+    <script src="{{ asset('backend/assets/js/pages/lightbox.init.js') }}"></script>
 
     <!-- Datatable init js -->
     <script src="{{ asset('backend/assets/js/pages/datatables.init.js') }}"></script>
