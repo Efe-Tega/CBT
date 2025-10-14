@@ -91,6 +91,8 @@
     <script src="{{ asset('backend/assets/libs/magnific-popup/jquery.magnific-popup.min.js') }}"></script>
     <!-- lightbox init js-->
     <script src="{{ asset('backend/assets/js/pages/lightbox.init.js') }}"></script>
+    <script src="{{ asset('backend/assets/js/code.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <!-- Datatable init js -->
     <script src="{{ asset('backend/assets/js/pages/datatables.init.js') }}"></script>

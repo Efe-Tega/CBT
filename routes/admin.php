@@ -16,6 +16,9 @@ Route::middleware('auth:admin,teacher')->group(function () {
         // Class Management
         Route::controller(ClassManagement::class)->group(function () {
             Route::get('/classes', 'viewClasses')->name('classes');
+
+            Route::post('/add/class', 'addClass')->name('add.class');
+            Route::put('/update/class', 'updateClass')->name('update.class');
         });
 
         // Student Management
