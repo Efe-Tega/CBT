@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\ClassManagement;
 use App\Http\Controllers\Backend\QuestionsController;
+use App\Http\Controllers\Backend\StudentManagement;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:admin,teacher')->group(function () {
@@ -15,6 +16,12 @@ Route::middleware('auth:admin,teacher')->group(function () {
         // Class Management
         Route::controller(ClassManagement::class)->group(function () {
             Route::get('/classes', 'viewClasses')->name('classes');
+        });
+
+        // Student Management
+        Route::controller(StudentManagement::class)->group(function () {
+            Route::get('/students/performance', 'studentPerformance')->name('performance');
+            Route::get('/student/enrollment', 'studentEnrollment')->name('enrollment');
         });
     });
 });
