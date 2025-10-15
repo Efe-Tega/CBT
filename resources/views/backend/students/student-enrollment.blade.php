@@ -83,7 +83,7 @@
                                         @endforeach
                                     </select>
 
-                                    @error('school_name')
+                                    @error('school_class')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>

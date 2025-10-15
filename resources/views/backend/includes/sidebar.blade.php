@@ -42,12 +42,12 @@
                     </a>
                 </li>
 
-                {{-- <li>
-                    <a href="{{ route('management.students') }}" class="waves-effect">
+                <li>
+                    <a href="{{ route('management.subjects') }}" class="waves-effect">
                         <i class="mdi mdi-school"></i>
-                        <span>Students</span>
+                        <span>Subject Management</span>
                     </a>
-                </li> --}}
+                </li>
 
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
@@ -58,6 +58,13 @@
                         <li><a href="{{ route('management.performance') }}">Academic Performance</a></li>
                         <li><a href="{{ route('management.enrollment') }}">Student Enrollment</a></li>
                     </ul>
+                </li>
+
+                <li>
+                    <a href="{{ route('management.settings') }}" class="waves-effect">
+                        <i class="ri-settings-5-line"></i>
+                        <span>Settings</span>
+                    </a>
                 </li>
 
             </ul>

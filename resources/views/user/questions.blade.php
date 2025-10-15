@@ -54,7 +54,6 @@
                     <div id="questionContainer" class="surface shadow-sm">
                     </div>
 
-
                     <!-- Controls -->
                     <div class="mt-6 flex items-center justify-between">
                         <button id="prevBtn"

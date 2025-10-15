@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('subjects', function (Blueprint $table) {
-            $table->enum('status', ['active', 'done'])->default('active');
+        Schema::create('schools', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('subjects', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('schools');
     }
 };
