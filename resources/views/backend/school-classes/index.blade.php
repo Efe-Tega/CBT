@@ -106,7 +106,7 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal -->`
+        <!-- /.modal -->
     </div>
 
     <script>

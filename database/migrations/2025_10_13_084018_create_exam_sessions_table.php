@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('exam_sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Subject::class);
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();

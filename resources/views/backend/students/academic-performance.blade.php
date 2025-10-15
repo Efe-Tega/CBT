@@ -64,6 +64,56 @@
             </div>
         </div>
         <!-- end card -->
-
     </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Score sheet</h4>
+
+                    <x-responsive-table :columns="[
+                        'S/N',
+                        'Student Name',
+                        'English Language',
+                        'Mathematics',
+                        'French Language',
+                        'Igbo Language',
+                        'ICT',
+                        'CCA',
+                        'CRS/IRS',
+                        'Home Economics',
+                        'Agric. Science',
+                        'Civic Education',
+                        'Basic Technology',
+                        'Basic Science',
+                        'Business Studies',
+                        'Yoruba Language',
+                        'Total',
+                        'Action',
+                    ]">
+                        <tr>
+                            <td>1</td>
+                            <td>Efakpor oghenetega</td>
+                            <td>80</td>
+                            <td>60</td>
+                            <td>40</td>
+                            <td>30</td>
+                            <td> 43</td>
+                            <td>23</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>100</td>
+                            <td>
+                                <a href="" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                    </x-responsive-table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end row -->
 @endsection

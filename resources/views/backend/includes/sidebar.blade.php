@@ -55,8 +55,8 @@
                         <span>Student Management</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('management.enrollment') }}">Student Enrollment</a></li>
                         <li><a href="{{ route('management.performance') }}">Academic Performance</a></li>
+                        <li><a href="{{ route('management.enrollment') }}">Student Enrollment</a></li>
                     </ul>
                 </li>
 

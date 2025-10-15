@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Exam;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('student_answers', function (Blueprint $table) {
-            $table->foreignIdFor(Exam::class)->after('user_id');
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('registration_number')->after('class_id')->nullable();
+            $table->enum('gender', ['male', 'female'])->after('email')->nullable();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('student_answers', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }
