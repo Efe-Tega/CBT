@@ -36,7 +36,7 @@ class SubjectManagement extends Controller
             'teacher' => 'Assign a teacher',
         ]);
 
-        Subject::create([
+        Subject::insert([
             'class_id' => $request->school_class,
             'school_id' => $request->school,
             'teacher_id' => $request->teacher,

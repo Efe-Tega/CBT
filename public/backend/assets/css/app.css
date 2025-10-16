@@ -2747,9 +2747,9 @@ input[switch] {
   display: none;
 }
 input[switch] + label {
-  font-size: 1em;
+  font-size: 1.5em;
   line-height: 1;
-  width: 56px;
+  width: 72px;
   height: 24px;
   background-color: #ced4da;
   background-image: none;

@@ -14,6 +14,10 @@ Route::middleware('auth:admin,teacher')->group(function () {
         // Questions Management
         Route::controller(QuestionsController::class)->group(function () {
             Route::get('/questions', 'manageQuestions')->name('questions');
+            Route::get('/questions/{id}', 'questionsPage')->name('questions.page');
+
+            Route::post('/subjects/{id}/toggle', 'toggleStatus')->name('subjects.toggle');
+            Route::post('/store/question', 'storeQuestion')->name('store.question');
         });
 
         // Class Management

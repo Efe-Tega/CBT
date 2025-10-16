@@ -66,7 +66,9 @@
                             <input type="text" class="form-control" name="school_class" placeholder="Enter class...">
                         </div>
                         <div class="col-12 col-sm-3">
-                            <button type="submit" class="btn btn-primary w-100">Add Class</button>
+                            <button type="submit" class="btn btn-primary w-100"
+                                onclick="this.disabled=true; this.form.submit(); this.innerText='Adding...';">Add
+                                Class</button>
                         </div>
                     </form>
                 </div>

@@ -106,7 +106,9 @@
                         </div>
 
                         <div>
-                            <button class="btn btn-primary" type="submit">Register</button>
+                            <button class="btn btn-primary"
+                                onclick="this.disabled=true; this.form.submit(); this.innerText='Registering...';"
+                                type="submit">Register</button>
                         </div>
                     </form>
                 </div>
