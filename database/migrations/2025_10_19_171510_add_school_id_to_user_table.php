@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('registration_number')->after('class_id')->unique()->nullable();
-            $table->enum('gender', ['male', 'female'])->after('email')->nullable();
+            $table->integer('school_id')->after('class_id')->nullable();
         });
     }
 

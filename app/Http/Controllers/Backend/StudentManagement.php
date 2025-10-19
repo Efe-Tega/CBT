@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\School;
 use App\Models\SchoolClass;
 use App\Models\User;
 use Carbon\Carbon;
@@ -19,7 +20,8 @@ class StudentManagement extends Controller
     public function studentEnrollment()
     {
         $classes = SchoolClass::all();
-        return view('backend.students.student-enrollment', compact('classes'));
+        $schools = School::all();
+        return view('backend.students.student-enrollment', compact('classes', 'schools'));
     }
 
     public function registerStudent(Request $request)
@@ -28,12 +30,12 @@ class StudentManagement extends Controller
             'firstname' => 'required|string|max:255|min:3',
             'lastname' => 'required|string|max:255|min:3',
             'school_class' => 'required',
-            'gender' => 'required',
+            'school_id' => 'required'
         ], [
             'firstname.required' => 'Please enter student first name',
             'lastname.required' => 'Student surname is required',
             'school_class.required' => 'Please select a class',
-            'gender.required' => 'Please select gender',
+            'school_id.required' => 'Please select a school',
         ]);
 
         User::create([
@@ -41,6 +43,7 @@ class StudentManagement extends Controller
             'middlename' => $request->middlename,
             'lastname' => $request->lastname,
             'class_id' => $request->school_class,
+            'school_id' => $request->school_id,
             'gender' => $request->gender,
             'password' => Hash::make($request->lastname),
             'created_at' => Carbon::now(),
@@ -61,8 +64,9 @@ class StudentManagement extends Controller
         $class = SchoolClass::findOrFail($classId);
         $students = User::where('class_id', $classId)->get();
         $classLevels = SchoolClass::all();
+        $schools = School::all();
 
-        return view('backend.students.student-list', compact('students', 'class', 'classLevels'));
+        return view('backend.students.student-list', compact('students', 'class', 'classLevels', 'schools'));
     }
 
     public function updateStudentData(Request $request)
@@ -75,6 +79,8 @@ class StudentManagement extends Controller
             'lastname' => $request->lastname,
             'gender' => $request->gender,
             'class_id' => $request->school_class,
+            'school_id' => $request->school_id,
+            'password' => Hash::make($request->lastname),
         ]);
 
         $student->refresh();

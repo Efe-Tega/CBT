@@ -41,7 +41,7 @@
                 <div class="card-body">
 
                     <h4 class="card-title">{{ $class->name }} Class List</h4>
-                    <x-table :columns="['S/N', 'Registration No.', 'Surname Name', 'Other Names', 'Gender', 'Actions']">
+                    <x-table :columns="['S/N', 'Registration No.', 'Surname', 'Other Names', 'Gender', 'Actions']">
                         @foreach ($students as $key => $student)
                             <tr id="student-row-{{ $student->id }}">
                                 <td>{{ $key + 1 }}</td>
@@ -51,7 +51,8 @@
                                 <td>{{ Str::title(strtolower($student->gender)) }}</td>
                                 <td>
                                     <button href="" class="btn btn-primary btn-sm waves-effect waves-light edit-btn"
-                                        data-id="{{ $student->id }}" data-firstname="{{ $student->firstname }}"
+                                        data-id="{{ $student->id }}" data-school_id = "{{ $student->school_id }}"
+                                        data-firstname="{{ $student->firstname }}"
                                         data-middlename="{{ $student->middlename }}"
                                         data-lastname="{{ $student->lastname }}" data-gender="{{ $student->gender }}"
                                         data-class="{{ $student->class_id }}" data-bs-toggle="modal"
@@ -84,6 +85,16 @@
                             <input type="hidden" id="studentId" name="id">
 
                             <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Surname *</label>
+                                        <input type="text" class="form-control" id="lastname" name="lastname"
+                                            placeholder="Enter surname" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="" class="form-label">First name *</label>
@@ -99,12 +110,16 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label for="" class="form-label">Surname *</label>
-                                        <input type="text" class="form-control" id="lastname" name="lastname"
-                                            placeholder="Enter surname" required>
+                                        <label for="" class="form-label">School *</label>
+                                        <select class="form-select" id="school_id" name="school_id" required>
+                                            @foreach ($schools as $school)
+                                                <option value="{{ $school->id }}">{{ $school->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -123,8 +138,8 @@
 
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="" class="form-label">Gender *</label>
-                                        <select class="form-select" id="gender" name="gender" required>
+                                        <label for="" class="form-label">Gender</label>
+                                        <select class="form-select" id="gender" name="gender">
                                             <option value="male">Male</option>
                                             <option value="female">Female</option>
                                         </select>
@@ -156,6 +171,7 @@
 
                 // Extract data attributes from button
                 const id = button.getAttribute('data-id');
+                const schoolId = button.getAttribute('data-school_id');
                 const firstname = button.getAttribute('data-firstname');
                 const middlename = button.getAttribute('data-middlename');
                 const lastname = button.getAttribute('data-lastname');
@@ -164,6 +180,7 @@
 
                 // Populate modal fields safely
                 editModal.querySelector('#studentId').value = id;
+                editModal.querySelector('#school_id').value = schoolId;
                 editModal.querySelector('#firstname').value = firstname || '';
                 editModal.querySelector('#middlename').value = middlename || '';
                 editModal.querySelector('#lastname').value = lastname || '';

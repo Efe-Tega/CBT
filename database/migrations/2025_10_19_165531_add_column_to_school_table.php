@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Subject;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('questions', function (Blueprint $table) {
-            $table->foreignIdFor(Subject::class)->after('exam_id');
+        Schema::table('schools', function (Blueprint $table) {
+            $table->string('code')->after('name')->nullable();
         });
     }
 
@@ -22,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('questions', function (Blueprint $table) {
+        Schema::table('subjects', function (Blueprint $table) {
             //
         });
     }

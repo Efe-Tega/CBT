@@ -39,6 +39,20 @@
                         @csrf
 
                         <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="" class="form-label">Surname *</label>
+                                    <input type="text" class="form-control" id="" name="lastname"
+                                        value="{{ old('lastname') }}" placeholder="Enter surname" required>
+
+                                    @error('lastname')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="" class="form-label">First name *</label>
@@ -58,19 +72,25 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="" class="form-label">Surname *</label>
-                                    <input type="text" class="form-control" id="" name="lastname"
-                                        value="{{ old('lastname') }}" placeholder="Enter surname" required>
+                                    <label for="" class="form-label">School *</label>
+                                    <select class="form-select" id="" name="school_id" required>
+                                        <option selected disabled value="">Choose...</option>
+                                        @foreach ($schools as $school)
+                                            <option value="{{ $school->id }}">{{ $school->name }}</option>
+                                        @endforeach
+                                    </select>
 
-                                    @error('lastname')
+                                    @error('school_id')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
                         </div>
+
 
                         <div class="row">
                             <div class="col-md-6">
@@ -91,8 +111,8 @@
 
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="" class="form-label">Gender *</label>
-                                    <select class="form-select" id="" name="gender" required>
+                                    <label for="" class="form-label">Gender</label>
+                                    <select class="form-select" id="" name="gender">
                                         <option selected disabled value="">Choose...</option>
                                         <option>Male</option>
                                         <option>Female</option>
