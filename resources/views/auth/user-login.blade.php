@@ -47,7 +47,8 @@
                     <div>
                         <label for="matric" class="block text-sm font-medium mb-1">Username/Registration
                             Number</label>
-                        <input id="matric" type="text" required placeholder="e.g., CSC/2021/0123" name="lastname"
+                        <input id="matric" type="text" required placeholder="e.g., CSC/2021/0123"
+                            name="registration_number"
                             class="w-full rounded border border-slate-300 px-3 py-2 focus:outline-none input-focus" />
                     </div>
                     <div>

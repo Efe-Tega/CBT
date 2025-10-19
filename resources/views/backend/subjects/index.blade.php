@@ -25,39 +25,7 @@
     <!-- end page title -->
 
     <div class="row">
-        <div class="col-xl-6 col-lg-6">
-            @foreach ($schools as $school)
-                <div class="card">
-                    @php
-                        $uniqueSubjects = $school->subjects->unique('name');
-                    @endphp
-
-                    @if ($uniqueSubjects->count() > 0)
-                        <div class="card-body">
-
-                            <h4 class="card-title">{{ $school->name }}</h4>
-
-                            <x-flash-message type="info" />
-
-                            <x-responsive-table :columns="['S/N', 'Subject', 'Action']">
-                                @foreach ($uniqueSubjects as $key => $subject)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $subject->name }}</td>
-                                        <td>
-                                            <a href="" class="btn btn-primary btn-sm">Edit</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </x-responsive-table>
-
-                        </div>
-                    @endif
-                </div>
-            @endforeach
-        </div> <!-- end col -->
-
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-xl-12 col-lg-12">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-3">Add Subject</h4>
@@ -161,6 +129,35 @@
             </div>
             <!-- end card -->
         </div> <!-- end col -->
+
+        @foreach ($subjectsByClass as $subjects)
+            <div class="col-xl-6 col-lg-6">
+                <div class="card">
+
+                    <div class="card-body">
+
+                        <h4 class="card-title">{{ strtoupper($subjects->first()->class->name) }}</h4>
+
+                        <x-flash-message type="info" />
+
+                        <x-responsive-table :columns="['S/N', 'Subject', 'Duration', 'Action']">
+                            @foreach ($subjects as $key => $subject)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $subject->name }}</td>
+                                    <td>{{ $subject->duration }} mins</td>
+                                    <td>
+                                        <a href="{{ }}" class="btn btn-primary btn-sm">Edit</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </x-responsive-table>
+
+                    </div>
+
+                </div>
+            </div> <!-- end col -->
+        @endforeach
 
     </div> <!-- end row -->
 @endsection

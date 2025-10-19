@@ -15,9 +15,10 @@ class SubjectManagement extends Controller
     public function viewSubjects()
     {
         $schools = School::with('subjects')->get();
+        $subjectsByClass = Subject::with('class')->get()->groupBy('class_id');
         $classes = SchoolClass::all();
         $teachers = Teacher::all();
-        return view('backend.subjects.index', compact('schools', 'classes', 'teachers'));
+        return view('backend.subjects.index', compact('schools', 'classes', 'teachers', 'subjectsByClass'));
     }
 
     public function addSubject(Request $request)

@@ -1,4 +1,9 @@
 @extends('backend.backend-main')
+
+@section('title')
+    {{ __('Subject Questions') }}
+@endsection
+
 @section('backend-content')
     <!-- start page title -->
     <div class="row">

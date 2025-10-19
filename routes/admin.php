@@ -15,9 +15,11 @@ Route::middleware('auth:admin,teacher')->group(function () {
         Route::controller(QuestionsController::class)->group(function () {
             Route::get('/questions', 'manageQuestions')->name('questions');
             Route::get('/questions/{id}', 'questionsPage')->name('questions.page');
+            Route::get('/delete/question/{id}', 'deleteQuestion')->name('delete.question');
 
             Route::post('/subjects/{id}/toggle', 'toggleStatus')->name('subjects.toggle');
             Route::post('/store/question', 'storeQuestion')->name('store.question');
+            Route::post('/questions/update/{id}', 'updateQuestion')->name('update.question');
         });
 
         // Class Management

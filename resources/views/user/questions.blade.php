@@ -20,7 +20,7 @@
                         <img class="w-10 h-10 rounded-full object-cover" src="https://i.pravatar.cc/80?img=12"
                             alt="User" />
                         <div class="text-right">
-                            <p class="text-sm font-medium">Welcome, Paul</p>
+                            <p class="text-sm font-medium">Welcome, {{ Auth::user()->firstname }}</p>
                             <p class="text-xs text-slate-600">English Language</p>
                         </div>
                     </div>
@@ -101,6 +101,33 @@
             const q = questions[index];
             if (!q) return;
 
+            // check to show instruction
+            const prevInstructionId = index > 0 ? questions[index - 1].instruction_id : null;
+            let instructionHTML = "";
+
+            if (q.instruction && q.instruction.id !== prevInstructionId) {
+                instructionHTML = `
+                <div class="p-3 mb-3 border border-slate-300 bg-slate-50 rounded">
+                <strong class="block text-slate-700">Instruction:</strong>
+                <div class="text-slate-800 text-sm mt-1">
+                    ${q.instruction.text}
+                </div>
+                </div>
+                `;
+            }
+
+            let questionHTML = "";
+            if (q.question_text) {
+                questionHTML = `
+        <div class="mt-2 text-sm text-slate-800 font-medium leading-relaxed">
+            <pre class="surface bg-slate-100 border border-slate-200"
+            style="padding: 2px 12px; font-size: 0.875rem; overflow:auto;">
+                <code>${q.question_text}</code>
+            </pre>
+        </div>
+    `;
+            }
+
             // Build HTML
             container.innerHTML = `
             <div class="px-4 p-3 flex justify-between">
@@ -121,15 +148,8 @@
             </div>
 
             <div class="p-4">
-                <div class="mt-2 text-sm text-slate-800 font-medium leading-relaxed">
-                    
-                    <pre class="surface bg-slate-100 border border-slate-200"
-style="padding: 2px 12px; font-size: 0.875rem; overflow:auto;">
-<code>
-${q.question_text}
-</code>
-</pre>
-                </div>
+                ${instructionHTML}
+                ${questionHTML}
 
                 <form class="mt-4">
                     ${renderOption('A', q.option_a, q.id)}
