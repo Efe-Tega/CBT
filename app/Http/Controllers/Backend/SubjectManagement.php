@@ -48,4 +48,22 @@ class SubjectManagement extends Controller
 
         return redirect()->back()->with('success', 'Subject added successfully');
     }
+
+    public function updateSchoolSubject(Request $request)
+    {
+        $id = $request->id;
+
+        $subject = Subject::findOrFail($id);
+        $subject->update([
+            'class_id' => $request->class_id,
+            'school_id' => $request->school_id,
+            'teacher_id' => $request->teacher_id,
+            'name' => $request->subject,
+            'duration' => $request->duration,
+        ]);
+
+        $notification = array('message' => 'Subject Data updated successfully', 'alert-type' => 'success');
+
+        return redirect()->back()->with($notification);
+    }
 }

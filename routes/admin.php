@@ -46,6 +46,7 @@ Route::middleware('auth:admin,teacher')->group(function () {
             Route::get('/subjects', 'viewSubjects')->name('subjects');
 
             Route::post('/add/subject', 'addSubject')->name('add.subject');
+            Route::post('/update/school_subject', 'updateSchoolSubject')->name('update.school_subject');
         });
 
         // School Management
