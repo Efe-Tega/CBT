@@ -24,7 +24,7 @@
     </div>
     <!-- end page title -->
 
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-xl-7">
             <div class="card">
                 <div class="card-body">
@@ -47,5 +47,5 @@
             </div>
             <!-- end card -->
         </div> <!-- end col -->
-    </div>
+    </div> --}}
 @endsection
