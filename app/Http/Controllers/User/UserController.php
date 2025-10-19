@@ -38,7 +38,6 @@ class UserController extends Controller
 
         $exam = Exam::where('status', 'active')->firstOrFail(); // returns active CA or Exam
         $questions = Question::with('instruction')
-            ->where('exam_id', $exam->id)
             ->where('subject_id', $subj_id)
             ->where('is_visible', true)
             ->inRandomOrder()

@@ -9,14 +9,29 @@ use App\Models\Question;
 use App\Models\Subject;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionsController extends Controller
 {
     public function manageQuestions()
     {
+        if (Auth::guard('teacher')->check()) {
+            $teacher = Auth::guard('teacher')->user();
+
+            // Only subjects that belong to this teacher
+            $subjects = Subject::where('teacher_id', $teacher->id)
+                ->with('class')
+                ->get();
+        } elseif (Auth::guard('admin')->check()) {
+            // Admin sees all
+            $subjects = Subject::with('class')->get();
+        } else {
+            abort(403, 'Unauthorized');
+        }
+
         $subjectsByClass = Subject::with('class')->get()->groupBy('class_id');
 
-        return view('backend.questions.index', compact('subjectsByClass'));
+        return view('backend.questions.index', compact('subjectsByClass', 'subjects'));
     }
 
     public function toggleStatus($id)
@@ -28,6 +43,18 @@ class QuestionsController extends Controller
         return response()->json([
             'success' => true,
             'status' => $subject->status,
+        ]);
+    }
+
+    public function toggleQuestionVisibility($id)
+    {
+        $question = Question::findOrFail($id);
+        $question->is_visible = $question->is_visible === 1 ? false : true;
+        $question->save();
+
+        return response()->json([
+            'success' => true,
+            'status' => $question->is_visible,
         ]);
     }
 
@@ -69,7 +96,6 @@ class QuestionsController extends Controller
             };
 
             $question = Question::create([
-                'exam_id' => $request->exam_id,
                 'subject_id' => $request->subject_id,
                 'instruction_id' => $instructionId,
                 'question_text' => $request->question_text,

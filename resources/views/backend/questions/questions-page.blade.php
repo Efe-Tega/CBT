@@ -39,11 +39,20 @@
                 <div class="card-body">
 
                     <h4 class="card-title">List</h4>
-                    <x-table :columns="['S/N', 'Question', 'Actions']">
+                    <x-table :columns="['S/N', 'Question', 'Status', 'Actions']">
                         @foreach ($questions as $key => $question)
                             <tr data-id="{{ $question->id }}">
                                 <td>{{ $key + 1 }}</td>
                                 <td>{!! Str::limit($question->question_text, 80) !!}</td>
+                                <td>
+                                    <div class="square-switch">
+                                        <input type="checkbox" id="question-switch-{{ $question->id }}" switch="bool"
+                                            class="toggle-status" data-id="{{ $question->id }}"
+                                            {{ $question->is_visible === 1 ? 'checked' : '' }} />
+                                        <label for="question-switch-{{ $question->id }}" data-on-label="Published"
+                                            data-off-label="Not visible"></label>
+                                    </div>
+                                </td>
 
                                 <td>
                                     <button class="btn btn-primary btn-sm edit-btn" data-id="{{ $question->id }}"
@@ -94,7 +103,6 @@
 
                             <input type="hidden" name="id" id="question_id">
                             <input type="hidden" id="" name="subject_id" value="{{ $subject->id }}">
-                            <input type="hidden" id="" name="exam_id" value="{{ $exam->id }}">
 
                             {{-- Choose existing or add new instruction --}}
                             <div class="row">
@@ -398,6 +406,41 @@
                     saveBtn.disabled = false;
                     saveBtn.textContent = 'Submit Question';
                 }
+            });
+        });
+    </script>
+
+    <!-- Toggle question visibility script-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.toggle-status').forEach(toggle => {
+                toggle.addEventListener('change', async function() {
+                    const id = this.dataset.id;
+
+                    try {
+                        const response = await fetch(`/management/question/${id}/toggle`, {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                        });
+
+                        const data = await response.json();
+
+                        console.log(data);
+
+                        if (data.success) {
+                            console.log(`Subject ${id} set to ${data.status}`);
+
+                        } else {
+                            alert('Failed to update status');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert('An error occured.');
+                    }
+                });
             });
         });
     </script>

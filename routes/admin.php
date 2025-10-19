@@ -20,6 +20,7 @@ Route::middleware('auth:admin,teacher')->group(function () {
             Route::post('/subjects/{id}/toggle', 'toggleStatus')->name('subjects.toggle');
             Route::post('/store/question', 'storeQuestion')->name('store.question');
             Route::post('/questions/update/{id}', 'updateQuestion')->name('update.question');
+            Route::post('/question/{id}/toggle', 'toggleQuestionVisibility')->name('question.toggle');
         });
 
         // Class Management

@@ -26,7 +26,46 @@
                     </a>
                 </li>
 
-                @auth('teacher')
+                @auth('admin')
+                    <li>
+                        <a href="{{ route('management.questions') }}" class="waves-effect">
+                            <i class="ri-question-line"></i>
+                            <span>Questions</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('management.classes') }}" class="waves-effect">
+                            <i class="mdi mdi-school"></i>
+                            <span>Class Management</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('management.subjects') }}" class="waves-effect">
+                            <i class="ri-folder-5-line"></i>
+                            <span>Subject Management</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-user-line"></i>
+                            <span>Student Management</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li><a href="{{ route('management.performance') }}">Academic Performance</a></li>
+                            <li><a href="{{ route('management.enrollment') }}">Student Enrollment</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('management.settings') }}" class="waves-effect">
+                            <i class="ri-settings-5-line"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                @else
                     <li>
                         <a href="{{ route('management.questions') }}" class="waves-effect">
                             <i class="ri-question-line"></i>
@@ -35,37 +74,7 @@
                     </li>
                 @endauth
 
-                <li>
-                    <a href="{{ route('management.classes') }}" class="waves-effect">
-                        <i class="mdi mdi-school"></i>
-                        <span>Class Management</span>
-                    </a>
-                </li>
 
-                <li>
-                    <a href="{{ route('management.subjects') }}" class="waves-effect">
-                        <i class="mdi mdi-school"></i>
-                        <span>Subject Management</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="ri-user-line"></i>
-                        <span>Student Management</span>
-                    </a>
-                    <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('management.performance') }}">Academic Performance</a></li>
-                        <li><a href="{{ route('management.enrollment') }}">Student Enrollment</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="{{ route('management.settings') }}" class="waves-effect">
-                        <i class="ri-settings-5-line"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
 
             </ul>
         </div>

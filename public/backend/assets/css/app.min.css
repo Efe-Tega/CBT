@@ -2696,7 +2696,7 @@ input[switch] {
 input[switch] + label {
     font-size: 1em;
     line-height: 1;
-    width: 72px;
+    width: 88px;
     height: 24px;
     background-color: #ced4da;
     background-image: none;
@@ -2755,7 +2755,7 @@ input[switch]:checked + label:before {
     left: 3px;
 }
 input[switch]:checked + label:after {
-    left: 49px;
+    left: 64px;
     background-color: #eff2f7;
 }
 input[switch="bool"] + label {
