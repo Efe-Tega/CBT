@@ -16,9 +16,9 @@
                 <div class="text-right">
                     <div class="text-sm font-medium">{{ $student->firstname }} {{ $student->middlename }}
                         {{ $student->lastname }}</div>
-                    <div class="text-xs text-slate-600">CSC/2021/0123</div>
+                    <div class="text-xs text-slate-600">{{ $student->registration_number }}</div>
                 </div>
-                <img class="w-10 h-10 rounded-full object-cover" src="https://i.pravatar.cc/80?img=12" alt="Profile" />
+                <img class="w-10 h-10 rounded-full object-cover" src="{{ asset('assets/default.jpg') }}" alt="Profile" />
                 <a href="{{ route('user.logout') }}" class="btn-muted text-sm font-medium px-3 py-1.5 rounded">Logout</a>
             </div>
         </div>

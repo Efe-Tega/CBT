@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ExamSession;
 use App\Models\Question;
 use App\Models\StudentAnswer;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -72,13 +73,16 @@ class StudentExamController extends Controller
         }
     }
 
-    public function examSummary()
+    public function examSummary(Request $request)
     {
         $user = Auth::user();
         $studentAnswers = StudentAnswer::where('user_id', $user->id)
             ->where('finalized', false)->get();
 
+        $subjectId = $request->query('subject_id');
+        $subject = Subject::findOrFail($subjectId);
+
         $examId = $studentAnswers->first()?->exam_id;
-        return view('user.summary', compact('studentAnswers', 'examId'));
+        return view('user.summary', compact('studentAnswers', 'examId', 'subject'));
     }
 }

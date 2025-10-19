@@ -21,19 +21,19 @@
                             alt="User" />
                         <div class="text-right">
                             <p class="text-sm font-medium">Welcome, {{ Auth::user()->firstname }}</p>
-                            <p class="text-xs text-slate-600">English Language</p>
+                            <p class="text-xs text-slate-600">{{ $subjectName }}</p>
                         </div>
                     </div>
-                    <a href="{{ route('exam.summary') }}">
-                        <button id="submitBtn"
-                            class="inline-flex items-center gap-2 btn-primary text-sm font-medium px-4 py-2 rounded">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path
-                                    d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" />
-                            </svg>
-                            Submit
-                        </button>
-                    </a>
+
+                    <button id="submitBtn"
+                        class="inline-flex items-center gap-2 btn-primary text-sm font-medium px-4 py-2 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" />
+                        </svg>
+                        Submit
+                    </button>
+
                 </div>
             </div>
         </header>
@@ -154,8 +154,8 @@
                 <form class="mt-4">
                     ${renderOption('A', q.option_a, q.id)}
                     ${renderOption('B', q.option_b, q.id)}
-                    ${renderOption('C', q.option_c, q.id)}
-                    ${renderOption('D', q.option_d, q.id)}     
+                    ${q.option_c ? renderOption('C', q.option_c, q.id) : ''}
+                    ${q.option_d ? renderOption('D', q.option_d, q.id) : ''}  
                 </form>
             </div>
         `;
@@ -380,22 +380,19 @@
 
         updateTimer();
 
-        // Manual submit button click
-        document.getElementById('submitBtn')?.addEventListener('click', async () => {
-            await submitExam(false);
+        // Submit button to redirect to summary
+        document.getElementById('submitBtn')?.addEventListener('click', () => {
+
+            // Pass endTime in ISO format (same as used before)
+            const url = new URL("{{ route('exam.summary') }}", window.location.origin);
+            url.searchParams.set("end_time", new Date(endTime).toISOString());
+            url.searchParams.set("subject_id", `${questions[0].subject_id}`);
+            window.location.href = url.toString();
         });
 
         // Initialize
         loadProgress().then(() => {
             renderQuestion(currentIndex);
         });
-    });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-
-
     });
 </script>

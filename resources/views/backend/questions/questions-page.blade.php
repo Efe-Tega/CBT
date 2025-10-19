@@ -38,21 +38,35 @@
             <div class="card">
                 <div class="card-body">
 
+                    @php
+                        $columns = ['S/N', 'Question'];
+
+                        // If admin guard is authenticated, show Status column
+                        if (auth()->guard('admin')->check()) {
+                            $columns[] = 'Status';
+                        }
+
+                        $columns[] = 'Actions';
+                    @endphp
+
                     <h4 class="card-title">List</h4>
-                    <x-table :columns="['S/N', 'Question', 'Status', 'Actions']">
+                    <x-table :columns="$columns">
                         @foreach ($questions as $key => $question)
                             <tr data-id="{{ $question->id }}">
                                 <td>{{ $key + 1 }}</td>
                                 <td>{!! Str::limit($question->question_text, 80) !!}</td>
-                                <td>
-                                    <div class="square-switch">
-                                        <input type="checkbox" id="question-switch-{{ $question->id }}" switch="bool"
-                                            class="toggle-status" data-id="{{ $question->id }}"
-                                            {{ $question->is_visible === 1 ? 'checked' : '' }} />
-                                        <label for="question-switch-{{ $question->id }}" data-on-label="Published"
-                                            data-off-label="Not visible"></label>
-                                    </div>
-                                </td>
+
+                                @if (auth()->guard('admin')->check())
+                                    <td>
+                                        <div class="square-switch">
+                                            <input type="checkbox" id="question-switch-{{ $question->id }}" switch="bool"
+                                                class="toggle-status" data-id="{{ $question->id }}"
+                                                {{ $question->is_visible === 1 ? 'checked' : '' }} />
+                                            <label for="question-switch-{{ $question->id }}" data-on-label="Published"
+                                                data-off-label="Not visible"></label>
+                                        </div>
+                                    </td>
+                                @endif
 
                                 <td>
                                     <button class="btn btn-primary btn-sm edit-btn" data-id="{{ $question->id }}"

@@ -64,7 +64,8 @@ class UserController extends Controller
         return view('user.questions', [
             'questions' => $questions,
             'exam' => $exam,
-            'session' => $existingSession
+            'session' => $existingSession,
+            'subjectName' => $subject->name,
         ]);
     }
 
