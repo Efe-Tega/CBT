@@ -71,6 +71,12 @@ Route::middleware('auth:admin,teacher')->group(function () {
         // System Settings
         Route::controller(SettingController::class)->group(function () {
             Route::get('/settings', 'settings')->name('settings');
+            Route::get('/exam/config', 'examConfig')->name('exam.config');
+
+            Route::post('/add/academic_year', 'addAcademicYear')->name('add.academic_year');
+            Route::post('/update/term', 'updateTerm')->name('update.term');
+            Route::post('/update/current_session', 'updateCurrentSession')->name('update.current_session');
+            Route::post('/update/assessment_type', 'assessmentType')->name('update.assessment_type');
         });
     });
 });

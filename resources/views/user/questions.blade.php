@@ -83,7 +83,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const questions = @json($questions);
-        const currentExamId = {{ $exam->id }};
+        const currentExamId = {{ $exam->exam_id }};
         const time =
             "{{ \Carbon\Carbon::parse($session->end_time)->setTimezone('Africa/Lagos')->toIso8601String() }}";
         const endTime = new Date(time).getTime();

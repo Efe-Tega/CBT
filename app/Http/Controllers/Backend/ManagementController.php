@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\ExamSetting;
 use App\Models\Question;
 use App\Models\Subject;
 use App\Models\Teacher;
@@ -15,6 +16,7 @@ class ManagementController extends Controller
     public function dashboard()
     {
         if (Auth::guard('teacher')->check()) {
+            $config = ExamSetting::find(1);
             $teacher = Auth::guard('teacher')->user();
             $totalQuestions = Question::join('subjects', 'questions.subject_id', '=', 'subjects.id')
                 ->where('subjects.teacher_id', $teacher->id)->count();
@@ -26,6 +28,7 @@ class ManagementController extends Controller
             $totalUsers = 0;
             $totalTeachers = 0;
         } elseif (Auth::guard('admin')->check()) {
+            $config = ExamSetting::find(1);
             $totalUsers = User::count();
             $totalSubjects = Subject::distinct('name')->count('name');
             $totalQuestions = Question::count();
@@ -35,6 +38,7 @@ class ManagementController extends Controller
         }
 
         return view('backend.index', [
+            'config' => $config,
             'students' => $totalUsers,
             'uniqueSubjects' => $totalSubjects,
             'questions' => $totalQuestions,

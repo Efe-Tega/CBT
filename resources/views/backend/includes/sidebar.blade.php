@@ -67,10 +67,15 @@
                     </li>
 
                     <li>
-                        <a href="{{ route('management.settings') }}" class="waves-effect">
+                        <a href="javascript: void(0);" class="waves-effect">
                             <i class="ri-settings-5-line"></i>
                             <span>Settings</span>
                         </a>
+
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li><a href="{{ route('management.settings') }}">General</a></li>
+                            <li><a href="{{ route('management.exam.config') }}">Exam Configuration</a></li>
+                        </ul>
                     </li>
                 @else
                     <li>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Exam;
+use App\Models\ExamSetting;
 use App\Models\Instruction;
 use App\Models\Question;
 use App\Models\Subject;
@@ -30,8 +30,9 @@ class QuestionsController extends Controller
         }
 
         $subjectsByClass = Subject::with('class')->get()->groupBy('class_id');
+        $config = ExamSetting::find(1);
 
-        return view('backend.questions.index', compact('subjectsByClass', 'subjects'));
+        return view('backend.questions.index', compact('subjectsByClass', 'subjects', 'config'));
     }
 
     public function toggleStatus($id)
@@ -62,13 +63,11 @@ class QuestionsController extends Controller
     {
         $subject = Subject::find($id);
         $questions = Question::where('subject_id', $id)->get();
-        $exam = Exam::where('status', 'active')->first();
         $instructions = Instruction::latest()->get();
 
         return view('backend.questions.questions-page', [
             'questions' => $questions,
             'subject' => $subject,
-            'exam' => $exam,
             'instructions' => $instructions,
         ]);
     }

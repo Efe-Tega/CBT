@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Exam;
 use App\Models\ExamSession;
+use App\Models\ExamSetting;
 use App\Models\Question;
 use App\Models\StudentAnswer;
 use App\Models\Subject;
@@ -36,7 +36,7 @@ class UserController extends Controller
         $student = Auth::user();
         $subject = Subject::findOrFail($subj_id);
 
-        $exam = Exam::where('status', 'active')->firstOrFail(); // returns active CA or Exam
+        $exam = ExamSetting::find(1);
         $questions = Question::with('instruction')
             ->where('subject_id', $subj_id)
             ->where('is_visible', true)

@@ -9,15 +9,38 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0">Questions</h4>
+                <div class="d-flex flex-column">
+                    <h4 class="mb-sm-0">Questions</h4>
 
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item">
-                            <a href="javascript: void(0);">Nasdec</a>
-                        </li>
-                        <li class="breadcrumb-item active">questions</li>
-                    </ol>
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('management.dashboard') }}">Nasdec</a>
+                            </li>
+                            <li class="breadcrumb-item active">questions</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="card d-flex flex-row gap-3 p-2" style="background-color: #DCDCDC">
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold"
+                            style="color: #0000A3; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif">Current
+                            Year</span>
+                        <span class="fw-bold"
+                            style="color: #494949; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif">
+                            {{ $config->year->name }}
+                        </span>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold"
+                            style="color: #0000A3; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif">
+                            Current Term
+                        </span>
+                        <span class="fw-bold"
+                            style="color: #494949; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif">
+                            {{ $config->term->name }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

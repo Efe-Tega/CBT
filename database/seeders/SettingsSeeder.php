@@ -13,9 +13,9 @@ class SettingsSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('settings')->insert([
-            'key' => 'exam_type',
-            'value' => 'CA'
+        DB::table('exams')->insert([
+            ['title' => 'CA'],
+            ['title' => 'Exam']
         ]);
     }
 }
