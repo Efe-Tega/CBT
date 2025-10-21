@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Question;
 use App\Models\School;
 use App\Models\SchoolClass;
+use App\Models\StudentAnswer;
+use App\Models\Subject;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -12,9 +15,85 @@ use Illuminate\Support\Facades\Hash;
 
 class StudentManagement extends Controller
 {
-    public function studentPerformance()
+    public function studentPerformance(Request $request)
     {
-        return view('backend.students.academic-performance');
+        $classes = SchoolClass::all();
+        $subjects = Subject::with('class')->get();
+        $classId = 0;
+
+        return view('backend.students.academic-performance', compact('subjects', 'classes', 'classId'));
+    }
+
+    public function getScoresheet(Request $request)
+    {
+        $classes = SchoolClass::all();
+        $classId = $request->class_id;
+
+        $students = User::where('class_id', $classId)->get();
+        $studentIds = $students->pluck('id');
+
+        $subjects = Subject::where('class_id', $classId)->get();
+
+        if ($students->isEmpty() || $subjects->isEmpty()) {
+            return view('backend.students.academic-performance', [
+                'students' => collect(),
+                'subjects' => collect(),
+                'scores' => collect(),
+                'classes' => $classes,
+                'classId' => $classId,
+            ]);
+        }
+
+        $answers = StudentAnswer::whereIn('user_id', $studentIds)
+            ->with('question')
+            ->get()
+            ->groupBy('user_id');
+
+        // ✅ total active questions per subject
+        $totalQuestions = Question::whereIn('subject_id', $subjects->pluck('id'))
+            ->where('is_visible', true)
+            ->get()
+            ->groupBy('subject_id')
+            ->map(fn($q) => $q->count());
+
+        // ✅ Calculate scores
+        $scores = [];
+
+        foreach ($students as $student) {
+            $studentAnswers = $answers[(int)$student->id] ?? collect();
+
+            foreach ($subjects as $subject) {
+                // filter this student's answers for the current subject
+                $answersForSubject = $studentAnswers->filter(function ($ans) use ($subject) {
+                    return $ans->question && $ans->question->subject_id === $subject->id;
+                });
+
+                $totalAnswered = $answersForSubject->whereNotNull('selected_answer')->count();
+                $totalCorrect = $answersForSubject->where('is_correct', true)->count();
+                $totalScore = $subject->total ?? 0;
+
+                $scores[$student->id][$subject->id] = [
+                    'total_answered' => $totalAnswered,
+                    'total_correct' => $totalCorrect,
+                    'total_score' => $totalScore,
+                ];
+            }
+        }
+
+        return view('backend.students.academic-performance', [
+            'classes' => $classes,
+            'classId' => $classId,
+            'students' => $students,
+            'subjects' => $subjects,
+            'scores' => $scores,
+            'totalQuestions' => $totalQuestions,
+        ]);
+    }
+
+    public function getSubjects($class_id)
+    {
+        $subjects = Subject::where('class_id', $class_id)->get();
+        return response()->json($subjects);
     }
 
     public function studentEnrollment()

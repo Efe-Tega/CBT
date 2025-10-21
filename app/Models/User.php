@@ -53,9 +53,10 @@ class User extends Authenticatable
         ];
     }
 
-    public function studentAnswers()
+
+    public function answers()
     {
-        return $this->hasMany(StudentAnswer::class, 'user_id');
+        return $this->hasMany(StudentAnswer::class, 'user_id', 'id');
     }
 
     public function class()

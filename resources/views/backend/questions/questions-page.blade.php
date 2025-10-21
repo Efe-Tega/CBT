@@ -282,7 +282,7 @@
                     document.getElementById('question_text').textContent = stripHTML(question);
                     document.getElementById('firstOption').textContent = optionA;
                     document.getElementById('secondOption').textContent = optionB;
-                    document.getElementById('thirdOption').textContent = optionC;
+                    showValueOrDefault('thirdOption', optionC);
                     showValueOrDefault('fourthOption', optionD);
                     document.getElementById('correctAnswerOption').textContent =
                         `Option ${correctAnswer}`;

@@ -36,8 +36,10 @@ Route::middleware('auth:admin,teacher')->group(function () {
         Route::controller(StudentManagement::class)->group(function () {
             Route::get('/students/performance', 'studentPerformance')->name('performance');
             Route::get('/student/enrollment', 'studentEnrollment')->name('enrollment');
+            Route::get('/get_subjects/{class_id}', 'getSubjects');
             Route::delete('/delete/student_data/{id}', 'deleteStudentData')->name('delete.student_data');
 
+            Route::post('/get_scoresheet', 'getScoresheet')->name('get_scoresheet');
             Route::post('/register/student', 'registerStudent')->name('register.student');
             Route::post('/find/students', 'findStudent')->name('find.student');
             Route::post('/update/student_data', 'updateStudentData')->name('update.student_data');
