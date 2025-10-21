@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\SchoolManagement;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\StudentManagement;
 use App\Http\Controllers\Backend\SubjectManagement;
+use App\Http\Controllers\Backend\TeacherManagementController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:admin,teacher')->group(function () {
@@ -53,6 +54,16 @@ Route::middleware('auth:admin,teacher')->group(function () {
         // School Management
         Route::controller(SchoolManagement::class)->group(function () {
             Route::post('/add/school', 'addSchool')->name('add.school');
+        });
+
+        // Teacher Management
+        Route::controller(TeacherManagementController::class)->group(function () {
+            Route::get('/teachers', 'teachers')->name('teachers');
+            Route::get('/delete/teacher_data/{id}', 'deleteTeacherData')->name('delete.teacher_data');
+
+            Route::post('/register/teacher', 'registerTeacher')->name('register.teacher');
+            Route::post('/teachers/{id}/toggle', 'toggleTeachersStatus');
+            Route::post('/update/teacher_data', 'updateTeacherData')->name('update.teacher_data');
         });
 
         // System Settings

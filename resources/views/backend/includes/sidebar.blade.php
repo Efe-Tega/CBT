@@ -60,6 +60,13 @@
                     </li>
 
                     <li>
+                        <a href="{{ route('management.teachers') }}" class="waves-effect">
+                            <i class="fas fa-users-cog"></i>
+                            <span>Teacher Registration</span>
+                        </a>
+                    </li>
+
+                    <li>
                         <a href="{{ route('management.settings') }}" class="waves-effect">
                             <i class="ri-settings-5-line"></i>
                             <span>Settings</span>
