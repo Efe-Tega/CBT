@@ -4,9 +4,12 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExamSession;
+use App\Models\ExamSetting;
 use App\Models\Question;
 use App\Models\StudentAnswer;
+use App\Models\StudentRecordScore;
 use App\Models\Subject;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,10 +43,58 @@ class StudentExamController extends Controller
     {
         $user = Auth::user();
         $studentId = $user->id;
+        $classId = $user->class_id;
+        $examId = $request->exam_id;
+
+        $examInfo = ExamSetting::find(1);
 
         StudentAnswer::where('user_id', $studentId)
-            ->where('exam_id', $request->exam_id)
+            ->where('exam_id', $examId)
             ->update(['finalized' => true]);
+
+        $finalizedAnswer = StudentAnswer::where('user_id', $studentId)
+            ->where('exam_id', $examId)
+            ->where('finalized', true)
+            ->with('question')
+            ->first();
+
+        if (!$finalizedAnswer || !$finalizedAnswer->question) {
+            return back()->with('error', 'No finalized answers found.');
+        }
+
+        $subjectId = $finalizedAnswer->question->subject_id;
+
+
+        $totalQuestions = Question::where('subject_id', $subjectId)
+            ->where('is_visible', true)
+            ->count();
+
+        $totalCorrectAnswers = StudentAnswer::where('user_id', $studentId)
+            ->where('exam_id', $examId)
+            ->where('finalized', true)
+            ->where('is_correct', 1)
+            ->count();
+
+
+        // 5️⃣ Optionally calculate percentage or score
+        // $percentage = $totalQuestions > 0 ? ($totalCorrectAnswers / $totalQuestions) * 100 : 0;
+        $record = StudentRecordScore::create([
+            'user_id' => $studentId,
+            'subject_id' => $subjectId,
+            'class_id' => $classId,
+            'exam_id' => $examId,
+            'term_id' => $examInfo->academic_term_id,
+            'year_id' => $examInfo->academic_year_id,
+            'total_questions' => $totalQuestions,
+            'correct_answer' => $totalCorrectAnswers,
+            'created_at' => Carbon::now(),
+        ]);
+
+        if ($record) {
+            StudentAnswer::where('user_id', $studentId)
+                ->where('exam_id', $examId)
+                ->delete();
+        }
 
         ExamSession::where('user_id', $user->id)->update(['status' => 'completed']);
 

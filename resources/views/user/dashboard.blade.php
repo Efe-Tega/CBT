@@ -29,12 +29,21 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <!-- Card component -->
             @foreach ($subjects as $subject)
+                @php
+                    $session = $examSessions->firstWhere('subject_id', $subject->id);
+                    $status = $session->status ?? 'Not_started';
+                @endphp
+
                 <div class="bg-white border border-slate-300 rounded shadow-sm overflow-hidden">
                     <div class="card-header px-4 py-2 flex items-center justify-between">
                         <h3 class="text-sm font-semibold">{{ $subject->name }}</h3>
-                        @if (in_array($subject->id, $finalizedSubjectIds))
+                        @if ($status === 'completed')
                             <span
                                 class="text-[10px] uppercase bg-red-600 text-rose-200 border border-rose-300 rounded px-2 py-0.5">done</span>
+                        @elseif($status === 'in_progress')
+                            <span
+                                class="text-[10px] uppercase bg-black-700 text-emerald-200 border border-black-300/40 rounded px-2 py-0.5">In
+                                progress</span>
                         @else
                             <span
                                 class="text-[10px] uppercase bg-green-700 text-emerald-200 border border-green-300/40 rounded px-2 py-0.5">Active</span>
@@ -45,10 +54,14 @@
                         <p><span class="text-slate-500">Class:</span> {{ $subject->class->name }}</p>
                     </div>
                     <div class="bg-[var(--color-bg)] px-4 py-3">
-                        @if (in_array($subject->id, $finalizedSubjectIds))
+                        @if ($status === 'completed')
                             <button class="inline-flex items-center justify-center bg-gray-400 text-sm rounded px-3 py-2"
                                 disabled>Start
                                 {{ $subject->name }} Exam</button>
+                        @elseif($status === 'in_progress')
+                            <a href="{{ route('user.questions', ['id' => $subject->id]) }}"
+                                class="inline-flex items-center justify-center btn-secondary text-sm rounded px-3 py-2">Continue
+                                {{ $subject->name }} Exam</a>
                         @else
                             <a href="{{ route('user.questions', ['id' => $subject->id]) }}"
                                 class="inline-flex items-center justify-center btn-secondary text-sm rounded px-3 py-2">Start

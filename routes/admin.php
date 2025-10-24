@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\StudentManagement;
 use App\Http\Controllers\Backend\SubjectManagement;
 use App\Http\Controllers\Backend\TeacherManagementController;
+use App\Http\Controllers\User\StudentExamController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:admin,teacher')->group(function () {
@@ -38,8 +39,9 @@ Route::middleware('auth:admin,teacher')->group(function () {
             Route::get('/student/enrollment', 'studentEnrollment')->name('enrollment');
             Route::get('/get_subjects/{class_id}', 'getSubjects');
             Route::delete('/delete/student_data/{id}', 'deleteStudentData')->name('delete.student_data');
+            Route::get('/students/export', 'exportScores')->name('students.export');
 
-            Route::post('/get_scoresheet', 'getScoresheet')->name('get_scoresheet');
+            Route::post('/students/performance', 'studentPerformance')->name('performance');
             Route::post('/register/student', 'registerStudent')->name('register.student');
             Route::post('/find/students', 'findStudent')->name('find.student');
             Route::post('/update/student_data', 'updateStudentData')->name('update.student_data');

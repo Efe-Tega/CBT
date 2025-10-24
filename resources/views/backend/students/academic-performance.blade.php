@@ -28,14 +28,13 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Get Students Score</h4>
+                    <h4 class="card-title mb-3">Get Students Score</h4>
 
-                    <form class="row g-2 align-items-center" action="{{ route('management.get_scoresheet') }}"
-                        method="POST">
+                    <form class="row g-2 align-items-center" action="{{ route('management.performance') }}" method="POST">
                         @csrf
 
-                        <div class="col-12 col-sm-5">
-                            <div class="input-group mb-2 mb-sm-0">
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group mb-sm-0">
                                 <span class="input-group-text">Class</span>
                                 <select class="form-select" id="class_id" name="class_id">
                                     <option selected disabled>Select class</option>
@@ -46,15 +45,41 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-sm-5">
-                            <div class="input-group mb-2 mb-sm-0">
-                                <span class="input-group-text">Subjects</span>
-                                <select class="form-select" id="subject_id" name="subject_id">
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group mb-sm-0">
+                                <span class="input-group-text">Assessment</span>
+                                <select class="form-select" id="exam_id" name="exam_id">
                                     <option selected disabled>Choose ...</option>
+                                    @foreach ($exams as $type)
+                                        <option value="{{ $type->id }}">{{ $type->title }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
 
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group mb-sm-0">
+                                <span class="input-group-text">Term</span>
+                                <select class="form-select" id="term_id" name="term_id">
+                                    <option selected disabled>Choose ...</option>
+                                    @foreach ($terms as $term)
+                                        <option value="{{ $term->id }}">{{ $term->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group mb-sm-0">
+                                <span class="input-group-text">Session</span>
+                                <select class="form-select" id="academic_year" name="academic_year">
+                                    <option selected disabled>Choose ...</option>
+                                    @foreach ($years as $year)
+                                        <option value="{{ $year->id }}">{{ $year->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
                         <!-- Submit button -->
                         <div class="col-12 col-sm-2">
@@ -67,102 +92,76 @@
         <!-- end card -->
     </div>
 
-    @if ($classId && $students->isNotEmpty() && $subjects->isNotEmpty())
+    @if (!$classId)
+    @elseif($records->isNotEmpty())
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Score sheet</h4>
-                        @if ($classId && $students->isNotEmpty() && $subjects->isNotEmpty())
-                            <x-responsive-table :columns="array_merge(['S/N', 'Student Name'], $subjects->pluck('name')->toArray(), [
-                                'Total',
-                                'Action',
-                            ])">
-                                @foreach ($students as $index => $student)
-                                    @php
-                                        $studentTotalCorrect = 0;
-                                        $studentTotalPossible = 0;
-                                    @endphp
+                        @php
+                            $groupedRecords = $records->groupBy('user_id');
+                            $studentClass = $classes->where('id', $classId)->first();
+                            $firstRecord = $records->first();
+                            $term = $firstRecord->term->name ?? 'N/A';
+                            $session = $firstRecord->year->name ?? 'N/A';
+                        @endphp
 
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="card-title">
+                                {{ $examInfo->exam->title }} Score Sheet for {{ $studentClass->name }} -
+                                {{ $term }}
+                                - Session {{ $session }}
+                            </h4>
+                            @if ($classId && $records->isNotEmpty())
+                                <a href="{{ route('management.students.export', [
+                                    'class_id' => $classId,
+                                    'term_id' => $firstRecord->term_id,
+                                    'academic_year' => $firstRecord->year_id,
+                                    'exam_id' => $firstRecord->exam_id,
+                                ]) }}"
+                                    class="btn btn-success btn-sm">Export to Excel</a>
+                            @endif
+                        </div>
 
+                        <x-responsive-table :columns="array_merge(['S/N', 'Student Name'], $subjects->pluck('name')->toArray(), ['Total'])">
+                            @foreach ($groupedRecords as $index => $studentRecords)
+                                @php
+                                    $student = $studentRecords->first()->user ?? null;
+                                    $studentTotalCorrect = 0;
+                                    $studentTotalQuestions = 0;
+                                @endphp
+
+                                @if ($student)
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $student->lastname }}</td>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $student->lastname }} {{ $student->middlename }} {{ $student->firstname }}
+                                        </td>
                                         @foreach ($subjects as $subject)
                                             @php
-                                                $subjectScore =
-                                                    $scores[$student->id][$subject->id]['total_correct'] ?? 0;
-                                                $subjectTotal = $totalQuestions[$subject->id] ?? 0;
-                                                $studentTotalCorrect += $subjectScore;
-                                                $studentTotalPossible += $subjectTotal;
+                                                $record = $studentRecords->where('subject_id', $subject->id)->first();
+                                                $correct = $record->correct_answer ?? 0;
+                                                $questions = $record->total_questions ?? 0;
+                                                $studentTotalCorrect += $correct;
+                                                $studentTotalQuestions += $questions;
                                             @endphp
 
-                                            <td>{{ $subjectScore }} / {{ $subjectTotal }}</td>
+                                            <td>{{ $correct }} / {{ $questions }}</td>
                                         @endforeach
-                                        <td>{{ $studentTotalCorrect }}/ {{ $studentTotalPossible }}</td>
-                                        <td>
-                                            <a href="" class="btn btn-danger btn-sm">Delete</a>
-                                        </td>
+                                        <td>{{ $studentTotalCorrect }}/ {{ $studentTotalQuestions }}</td>
+
                                     </tr>
-                                @endforeach
+                                @endif
+                            @endforeach
 
-                            </x-responsive-table>
-                        @else
-                            <div class="alert alert-warning mt-4">
-                                No results found for this class.
-                            </div>
-                        @endif
-
+                        </x-responsive-table>
                     </div>
                 </div>
             </div>
         </div>
+    @else
+        <div class="alert alert-warning mt-4">
+            No results found
+        </div>
     @endif
     <!-- end row -->
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const classSelect = document.getElementById('class_id');
-            const subjectSelect = document.getElementById('subject_id');
-
-            function resetSubjects() {
-                subjectSelect.innerHTML = '<option selected disabled>Choose subject ...</option>';
-            }
-
-            resetSubjects();
-
-            classSelect.addEventListener('change', function() {
-                const classId = this.value;
-
-                if (!classId) {
-                    resetSubjects();
-                    return;
-                }
-
-                fetch(`/management/get_subjects/${classId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        resetSubjects();
-
-                        if (data.length > 0) {
-                            data.forEach(subject => {
-                                const option = document.createElement('option');
-                                option.value = subject.id;
-                                option.textContent = subject.name;
-                                subjectSelect.appendChild(option);
-                            });
-                        } else {
-                            const option = document.createElement('option');
-                            option.disabled = true;
-                            option.textContent = 'No subjects available for this class';
-                            subjectSelect.appendChild(option);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching subjects:', error);
-                        resetSubjects();
-                    });
-            });
-        });
-    </script>
 @endsection

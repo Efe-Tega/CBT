@@ -3,92 +3,164 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\AcademicTerm;
+use App\Models\AcademicYear;
+use App\Models\Exam;
+use App\Models\ExamSetting;
 use App\Models\Question;
 use App\Models\School;
 use App\Models\SchoolClass;
 use App\Models\StudentAnswer;
+use App\Models\StudentRecordScore;
 use App\Models\Subject;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class StudentManagement extends Controller
 {
     public function studentPerformance(Request $request)
     {
         $classes = SchoolClass::all();
-        $subjects = Subject::with('class')->get();
-        $classId = 0;
+        $terms = AcademicTerm::all();
+        $years = AcademicYear::all();
+        $exams = Exam::all();
+        $examInfo = ExamSetting::find(1);
 
-        return view('backend.students.academic-performance', compact('subjects', 'classes', 'classId'));
-    }
+        // Defaults
+        $classId = $request->class_id ?? 0;
+        $term = $request->term_id ?? null;
+        $year = $request->academic_year ?? null;
+        $exam = $request->exam_id ?? null;
 
-    public function getScoresheet(Request $request)
-    {
-        $classes = SchoolClass::all();
-        $classId = $request->class_id;
+        $subjects = collect();
+        $records = collect();
 
-        $students = User::where('class_id', $classId)->get();
-        $studentIds = $students->pluck('id');
+        // If filters are applied
+        if ($classId && $term && $year && $exam) {
+            $subjects = Subject::where('class_id', $classId)->get();
 
-        $subjects = Subject::where('class_id', $classId)->get();
-
-        if ($students->isEmpty() || $subjects->isEmpty()) {
-            return view('backend.students.academic-performance', [
-                'students' => collect(),
-                'subjects' => collect(),
-                'scores' => collect(),
-                'classes' => $classes,
-                'classId' => $classId,
-            ]);
+            $records = StudentRecordScore::with(['user', 'subject'])
+                ->where('class_id', $classId)
+                ->where('term_id', $term)
+                ->where('year_id', $year)
+                ->where('exam_id', $exam)
+                ->get();
         }
 
-        $answers = StudentAnswer::whereIn('user_id', $studentIds)
-            ->with('question')
+        return view('backend.students.academic-performance', compact(
+            'terms',
+            'years',
+            'exams',
+            'classes',
+            'classId',
+            'subjects',
+            'records',
+            'examInfo',
+        ));
+    }
+
+    public function exportScores(Request $request)
+    {
+        $classId = $request->class_id;
+        $term = $request->term_id;
+        $year = $request->academic_year;
+        $exam = $request->exam_id;
+
+        $subjects = Subject::where('class_id', $classId)->get();
+        $records = StudentRecordScore::where('class_id', $classId)
+            ->where('term_id', $term)
+            ->where('year_id', $year)
+            ->where('exam_id', $exam)
             ->get()
             ->groupBy('user_id');
 
-        // ✅ total active questions per subject
-        $totalQuestions = Question::whereIn('subject_id', $subjects->pluck('id'))
-            ->where('is_visible', true)
-            ->get()
-            ->groupBy('subject_id')
-            ->map(fn($q) => $q->count());
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        // ✅ Calculate scores
-        $scores = [];
+        // Title
+        $sheet->setCellValue('A1', 'Student Result Report');
+        $sheet->mergeCells('A1:H1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        foreach ($students as $student) {
-            $studentAnswers = $answers[(int)$student->id] ?? collect();
+        // Header
+        $header = ['S/N', 'Surname', 'First Name', 'Middle Name'];
+        foreach ($subjects as $subject) {
+            $header[] = $subject->name;
+        }
+        $header[] = 'Total';
+        $sheet->fromArray($header, null, 'A3');
+
+        // Style header
+        $sheet->getStyle('A3:' . $sheet->getHighestColumn() . '3')->applyFromArray([
+            'font' => ['bold' => true],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'D9E1F2'],
+            ],
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN],
+            ],
+        ]);
+
+        // Data rows
+        $row = 4;
+        $count = 1;
+        foreach ($records as $studentRecords) {
+            $student = $studentRecords->first()->user ?? null;
+            if (!$student) continue;
+
+            $dataRow = [
+                $count,
+                $student->lastname ?? '',
+                $student->firstname ?? '',
+                $student->middlename ?? ''
+            ];
+
+            $totalCorrect = 0;
+            $totalQuestions = 0;
 
             foreach ($subjects as $subject) {
-                // filter this student's answers for the current subject
-                $answersForSubject = $studentAnswers->filter(function ($ans) use ($subject) {
-                    return $ans->question && $ans->question->subject_id === $subject->id;
-                });
-
-                $totalAnswered = $answersForSubject->whereNotNull('selected_answer')->count();
-                $totalCorrect = $answersForSubject->where('is_correct', true)->count();
-                $totalScore = $subject->total ?? 0;
-
-                $scores[$student->id][$subject->id] = [
-                    'total_answered' => $totalAnswered,
-                    'total_correct' => $totalCorrect,
-                    'total_score' => $totalScore,
-                ];
+                $record = $studentRecords->where('subject_id', $subject->id)->first();
+                $correct = $record->correct_answer ?? 0;
+                $questions = $record->total_questions ?? 0;
+                $totalCorrect += $correct;
+                $totalQuestions += $questions;
+                $dataRow[] = $correct;
             }
+
+            $dataRow[] = $totalCorrect;
+            $sheet->fromArray($dataRow, null, 'A' . $row);
+
+            $row++;
+            $count++;
         }
 
-        return view('backend.students.academic-performance', [
-            'classes' => $classes,
-            'classId' => $classId,
-            'students' => $students,
-            'subjects' => $subjects,
-            'scores' => $scores,
-            'totalQuestions' => $totalQuestions,
-        ]);
+        // Auto-size columns
+        foreach (range('A', $sheet->getHighestColumn()) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Save and download
+        $className = SchoolClass::find($classId);
+        $examType = Exam::find($exam);
+        $schoolTerm = AcademicTerm::find($term);
+
+        $filename = $className->name . '_student_' . $schoolTerm->name . '_' . $examType->title . '_report.xlsx';
+        $writer = new Xlsx($spreadsheet);
+        $filePath = storage_path($filename);
+        $writer->save($filePath);
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
+
 
     public function getSubjects($class_id)
     {

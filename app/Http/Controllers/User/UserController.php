@@ -21,14 +21,16 @@ class UserController extends Controller
             ->latest()
             ->get();
 
-        $finalizedSubjectIds = StudentAnswer::where('user_id', $student->id)
-            ->where('finalized', true)
-            ->join('questions', 'student_answers.question_id', '=', 'questions.id')
-            ->pluck('questions.subject_id')
-            ->unique()
-            ->toArray();
+        // $finalizedSubjectIds = StudentAnswer::where('user_id', $student->id)
+        //     ->where('finalized', true)
+        //     ->join('questions', 'student_answers.question_id', '=', 'questions.id')
+        //     ->pluck('questions.subject_id')
+        //     ->unique()
+        //     ->toArray();
 
-        return view('user.dashboard', compact('subjects', 'student', 'finalizedSubjectIds'));
+        $examSessions = ExamSession::where('user_id', $student->id)->get();
+
+        return view('user.dashboard', compact('subjects', 'student', 'examSessions'));
     }
 
     public function userQuestions($subj_id)
