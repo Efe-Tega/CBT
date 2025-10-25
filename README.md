@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Efe-Tega/CBT/public/assets/banner.png" alt="CBT Portal Banner" width="100%">
+  <img src="https://raw.githubusercontent.com/Efe-Tega/CBT/master/public/assets/banner.png" alt="CBT Portal Banner" width="100%">
 </p>
 
 # 🧠 Computer-Based Test (CBT) Portal
