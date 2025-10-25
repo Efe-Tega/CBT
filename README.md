@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Efe-Tega/CBT/public/assets/banner.png" alt="CBT Portal Banner" width="100%">
+</p>
+
 # 🧠 Computer-Based Test (CBT) Portal
 
 A **modern, secure, and user-friendly platform** for conducting online examinations.  
