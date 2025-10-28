@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Backend\ClassManagement;
+use App\Http\Controllers\Backend\ManagementController;
 use App\Http\Controllers\Backend\QuestionsController;
 use App\Http\Controllers\Backend\SchoolManagement;
 use App\Http\Controllers\Backend\SettingController;
@@ -12,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:admin,teacher')->group(function () {
     Route::prefix('management')->name('management.')->group(function () {
+
+        Route::controller(ManagementController::class)->group(function () {
+            Route::get('/export/all_student', 'exportAllStudent')->name('export.all_student');
+        });
 
         // Questions Management
         Route::controller(QuestionsController::class)->group(function () {

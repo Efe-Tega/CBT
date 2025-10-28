@@ -170,5 +170,34 @@
         </div>
         <!-- end row -->
 
+        @auth('admin')
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between mb-3">
+                                <h4 class="card-title">All Students</h4>
+                                <a href="{{ route('management.export.all_student') }}" class="btn btn-success btn-sm">Export
+                                    Student</a>
+                            </div>
+
+                            <x-table :columns="['S/N', 'Registration No.', 'Surname', 'Other Names', 'class']">
+                                @foreach ($all_students as $key => $student)
+                                    <tr id="student-row-{{ $student->id }}">
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $student->registration_number }}</td>
+                                        <td>{{ $student->lastname }}</td>
+                                        <td>{{ $student->middlename }} {{ $student->firstname }}</td>
+                                        <td>{{ $student->class->name }}</td>
+                                    </tr>
+                                @endforeach
+                            </x-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endauth
+
     </div>
 @endsection
