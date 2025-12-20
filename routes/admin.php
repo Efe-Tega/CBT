@@ -40,14 +40,16 @@ Route::middleware('auth:admin,teacher')->group(function () {
 
         // Student Management
         Route::controller(StudentManagement::class)->group(function () {
-            Route::match(['get', 'post'], '/students/performance', 'studentPerformance')->name('performance');
-            // Route::get('/students/performance', 'studentPerformance')->name('performance');
+            Route::match(['get', 'post'], '/students/performance', 'studentPerformance')
+                ->name('performance');
+            Route::match(['get', 'post'], '/subject/scores', 'subjectScores')
+                ->name('subject.score');
+
             Route::get('/student/enrollment', 'studentEnrollment')->name('enrollment');
             Route::get('/get_subjects/{class_id}', 'getSubjects');
             Route::delete('/delete/student_data/{id}', 'deleteStudentData')->name('delete.student_data');
             Route::get('/students/export', 'exportScores')->name('students.export');
 
-            // Route::post('/students/performance', 'studentPerformance')->name('performance');
             Route::post('/register/student', 'registerStudent')->name('register.student');
             Route::post('/find/students', 'findStudent')->name('find.student');
             Route::post('/update/student_data', 'updateStudentData')->name('update.student_data');

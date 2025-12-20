@@ -45,13 +45,13 @@ class StudentManagement extends Controller
         $terms = AcademicTerm::all();
         $years = AcademicYear::all();
         $exams = Exam::all();
-        $examInfo = ExamSetting::find(1);
 
         // Defaults
         $classId = $request->class_id ?? 0;
         $term = $request->term_id ?? null;
         $year = $request->academic_year ?? null;
         $exam = $request->exam_id ?? null;
+        $examInfo = ExamSetting::where('exam_id', $exam)->first();
 
         $subjects = collect();
         $records = collect();
@@ -76,6 +76,65 @@ class StudentManagement extends Controller
             'classId',
             'subjects',
             'records',
+            'examInfo',
+        ));
+    }
+
+    public function subjectScores(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $request->validate([
+                'class_id' => 'required',
+                'subject_id' => 'required',
+                'exam_id' => 'required',
+                'term_id' => 'required',
+                'academic_year' => 'required',
+            ], [
+                'class_id.required' => 'Please select a class',
+                'subject_id.required' => 'Please select subject',
+                'exam_id.required' => 'Please select assessment',
+                'term_id.required' => 'Please select a term',
+                'academic_year.required' => 'Please select academic',
+            ]);
+        }
+
+        $classes = SchoolClass::all();
+        $terms = AcademicTerm::all();
+        $years = AcademicYear::all();
+        $exams = Exam::all();
+
+        // Defaults
+        $classId = $request->class_id ?? 0;
+        $subjectId = $request->subject_id ?? null;
+        $term = $request->term_id ?? null;
+        $year = $request->academic_year ?? null;
+        $exam = $request->exam_id ?? null;
+
+        $subjects = collect();
+        $subjectRecords = collect();
+        $examInfo = ExamSetting::where('exam_id', $exam)->first();
+
+
+        if ($classId && $subjectId && $term && $year && $exam) {
+            $subjects = Subject::where('class_id', $classId)->get();
+
+            $subjectRecords = StudentRecordScore::with(['user', 'subject'])
+                ->where('class_id', $classId)
+                ->where('subject_id', $subjectId)
+                ->where('term_id', $term)
+                ->where('year_id', $year)
+                ->where('exam_id', $exam)
+                ->get();
+        }
+
+        return view('backend.students.subject-scores', compact(
+            'classes',
+            'exams',
+            'terms',
+            'years',
+            'subjectRecords',
+            'classId',
+            'subjects',
             'examInfo',
         ));
     }
