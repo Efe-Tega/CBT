@@ -27,6 +27,20 @@ class StudentManagement extends Controller
 {
     public function studentPerformance(Request $request)
     {
+        if ($request->isMethod('post')) {
+            $request->validate([
+                'class_id' => 'required',
+                'exam_id' => 'required',
+                'term_id' => 'required',
+                'academic_year' => 'required',
+            ], [
+                'class_id.required' => 'Please select a class',
+                'exam_id.required' => 'Please select assessment',
+                'term_id.required' => 'Please select a term',
+                'academic_year.required' => 'Please select academic',
+            ]);
+        }
+
         $classes = SchoolClass::all();
         $terms = AcademicTerm::all();
         $years = AcademicYear::all();

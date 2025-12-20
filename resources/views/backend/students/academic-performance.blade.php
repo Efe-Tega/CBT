@@ -37,12 +37,18 @@
                             <div class="input-group mb-sm-0">
                                 <span class="input-group-text">Class</span>
                                 <select class="form-select" id="class_id" name="class_id">
-                                    <option selected disabled>Select class</option>
+                                    <option selected disabled {{ old('class_id') ? '' : 'selected' }}>Select class</option>
                                     @foreach ($classes as $class)
-                                        <option value="{{ $class->id }}">{{ $class->name }}</option>
+                                        <option value="{{ $class->id }}"
+                                            {{ old('class_id') == $class->id ? 'selected' : '' }}>
+                                            {{ $class->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
+                            @error('class_id')
+                                <span class="text-danger" role="alert">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -51,10 +57,16 @@
                                 <select class="form-select" id="exam_id" name="exam_id">
                                     <option selected disabled>Choose ...</option>
                                     @foreach ($exams as $type)
-                                        <option value="{{ $type->id }}">{{ $type->title }}</option>
+                                        <option value="{{ $type->id }}"
+                                            {{ old('exam_id') == $type->id ? 'selected' : '' }}>
+                                            {{ $type->title }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
+                            @error('exam_id')
+                                <span class="text-danger" role="alert">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -63,10 +75,16 @@
                                 <select class="form-select" id="term_id" name="term_id">
                                     <option selected disabled>Choose ...</option>
                                     @foreach ($terms as $term)
-                                        <option value="{{ $term->id }}">{{ $term->name }}</option>
+                                        <option value="{{ $term->id }}"
+                                            {{ old('term_id') == $term->id ? 'selected' : '' }}>
+                                            {{ $term->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
+                            @error('term_id')
+                                <span class="text-danger" role="alert">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -75,10 +93,16 @@
                                 <select class="form-select" id="academic_year" name="academic_year">
                                     <option selected disabled>Choose ...</option>
                                     @foreach ($years as $year)
-                                        <option value="{{ $year->id }}">{{ $year->name }}</option>
+                                        <option value="{{ $year->id }}"
+                                            {{ old('academic_year') == $year->id ? 'selected' : '' }}>
+                                            {{ $year->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
+                            @error('academic_year')
+                                <span class="text-danger" role="alert">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <!-- Submit button -->
