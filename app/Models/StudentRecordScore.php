@@ -27,4 +27,9 @@ class StudentRecordScore extends Model
     {
         return $this->belongsTo(AcademicYear::class, 'year_id');
     }
+
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class, 'exam_id');
+    }
 }

@@ -147,21 +147,22 @@
 
                         <div class="d-flex align-items-center justify-content-between">
                             <h4 class="card-title">
-                                {{ $studentClass->name }} - {{ $subject }} ({{ $examInfo->exam->title }}) -
+                                {{ $studentClass->name }} - {{ $subject }} ({{ $firstRecord->exam->title }}) -
                                 {{ $term }} Scores - Session {{ $session }}
                             </h4>
                             @if ($classId && $subjectRecords->isNotEmpty())
-                                <a href="{{ route('management.students.export', [
+                                <a href="{{ route('management.export.subject_scores', [
                                     'class_id' => $classId,
                                     'term_id' => $firstRecord->term_id,
                                     'academic_year' => $firstRecord->year_id,
                                     'exam_id' => $firstRecord->exam_id,
+                                    'subject_id' => $firstRecord->subject_id,
                                 ]) }}"
                                     class="btn btn-success btn-sm">Export to Excel</a>
                             @endif
                         </div>
 
-                        <x-responsive-table :columns="array_merge(['S/N', 'Student Name', 'Registration No', 'Score', 'Total'])">
+                        <x-responsive-table :columns="array_merge(['S/N', 'Student Name', 'Registration No', 'Type', 'Score', 'Total'])">
 
                             @foreach ($subjectRecords as $index => $record)
                                 @php
@@ -176,6 +177,7 @@
                                         <td>
                                             {{ $student->registration_number ?? 'N/A' }}
                                         </td>
+                                        <td>{{ $record->exam->title }}</td>
                                         <td>{{ $record->correct_answer }} </td>
                                         <td>{{ $record->total_questions }}</td>
                                     </tr>

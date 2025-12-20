@@ -49,6 +49,7 @@ Route::middleware('auth:admin,teacher')->group(function () {
             Route::get('/get_subjects/{class_id}', 'getSubjects');
             Route::delete('/delete/student_data/{id}', 'deleteStudentData')->name('delete.student_data');
             Route::get('/students/export', 'exportScores')->name('students.export');
+            Route::get('/export/subject_scores', 'exportSubjectScores')->name('export.subject_scores');
 
             Route::post('/register/student', 'registerStudent')->name('register.student');
             Route::post('/find/students', 'findStudent')->name('find.student');

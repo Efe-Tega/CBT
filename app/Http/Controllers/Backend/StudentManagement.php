@@ -112,8 +112,6 @@ class StudentManagement extends Controller
 
         $subjects = collect();
         $subjectRecords = collect();
-        $examInfo = ExamSetting::where('exam_id', $exam)->first();
-
 
         if ($classId && $subjectId && $term && $year && $exam) {
             $subjects = Subject::where('class_id', $classId)->get();
@@ -135,8 +133,99 @@ class StudentManagement extends Controller
             'subjectRecords',
             'classId',
             'subjects',
-            'examInfo',
         ));
+    }
+
+    public function exportSubjectScores(Request $request)
+    {
+        $classId = $request->class_id;
+        $subjectId = $request->subject_id;
+        $term = $request->term_id;
+        $year = $request->academic_year;
+        $exam = $request->exam_id;
+
+        $records = StudentRecordScore::with(['user', 'subject'])
+            ->where('class_id', $classId)
+            ->where('subject_id', $subjectId)
+            ->where('term_id', $term)
+            ->where('year_id', $year)
+            ->where('exam_id', $exam)
+            ->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Title
+        $sheet->setCellValue('A1', 'Student Result Report');
+        $sheet->mergeCells('A1:H1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Header
+        $sheet->fromArray([
+            'S/N',
+            'Surname',
+            'First Name',
+            'Middle Name',
+            'Registration Number',
+            'Subject',
+            'Score',
+            'Total'
+        ], null, 'A3');
+
+        $sheet->getStyle('A3:G3')->applyFromArray([
+            'font' => ['bold' => true],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'starColor' => ['rgb' => 'D9E1F2'],
+            ],
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN],
+            ],
+        ]);
+
+        $row = 4;
+        $count = 1;
+
+        foreach ($records as $record) {
+            $student = $record->user;
+            if (!$student) continue;
+
+            $sheet->fromArray([
+                $count,
+                $student->lastname ?? '',
+                $student->firstname ?? '',
+                $student->middlename ?? '',
+                $student->registration_number ?? '',
+                $record->subject->name ?? 'N/A',
+                $record->correct_answer ?? 0,
+                $record->total_questions ?? 0,
+            ], null, 'A' . $row);
+
+            $row++;
+            $count++;
+        }
+
+        foreach (range('A', $sheet->getHighestDataColumn()) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $className = SchoolClass::find($classId);
+        $examType = Exam::find($exam);
+        $schoolTerm = AcademicTerm::find($term);
+        $subject = Subject::find($subjectId);
+
+        $filename =
+            $className->name . '_' .
+            $subject->name . '_' .
+            $schoolTerm->name . '_' .
+            $examType->title . '_report.xlsx';
+
+        $writer = new Xlsx($spreadsheet);
+        $filePath = storage_path($filename);
+        $writer->save($filePath);
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
     public function exportScores(Request $request)
