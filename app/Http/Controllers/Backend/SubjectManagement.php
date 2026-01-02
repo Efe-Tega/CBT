@@ -37,11 +37,26 @@ class SubjectManagement extends Controller
             'teacher' => 'Assign a teacher',
         ]);
 
+        $subjectName = ucwords($request->subject);
+        $classId = $request->school_class;
+
+        $exists = Subject::where('name', $subjectName)
+            ->where('class_id', $classId)
+            ->exists();
+
+        if ($exists) {
+            $notification = array(
+                'message' => 'Subject already exists for selected class',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
+
         Subject::insert([
-            'class_id' => $request->school_class,
+            'class_id' => $classId,
             'school_id' => $request->school,
             'teacher_id' => $request->teacher,
-            'name' => $request->subject,
+            'name' => ucwords($request->subject),
             'duration' => $request->duration,
             'created_at' => Carbon::now(),
         ]);
@@ -52,18 +67,34 @@ class SubjectManagement extends Controller
     public function updateSchoolSubject(Request $request)
     {
         $id = $request->id;
+        $subject_name = ucwords($request->subject);
 
         $subject = Subject::findOrFail($id);
+        $exists = Subject::where('name', $subject_name)
+            ->where('class_id', $request->class_id)
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($exists) {
+            $notification = array('message' => 'The subject already exists for the selected class', 'alert-type' => 'warning');
+            return redirect()->back()->with($notification);
+        }
+
         $subject->update([
             'class_id' => $request->class_id,
             'school_id' => $request->school_id,
             'teacher_id' => $request->teacher_id,
-            'name' => $request->subject,
+            'name' => $subject_name,
             'duration' => $request->duration,
         ]);
 
         $notification = array('message' => 'Subject Data updated successfully', 'alert-type' => 'success');
-
         return redirect()->back()->with($notification);
+    }
+
+    public function deleteSubject($id)
+    {
+        Subject::findOrFail($id)->delete();
+        return redirect()->back();
     }
 }

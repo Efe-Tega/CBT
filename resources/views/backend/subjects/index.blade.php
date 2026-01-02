@@ -104,7 +104,7 @@
 
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="" class="form-label">Subject question uploader</label>
+                                <label for="" class="form-label">Subject teacher</label>
                                 <select class="form-select" id="" name="teacher" required>
                                     <option selected disabled value="">Choose...</option>
                                     <option value="0">Administrator</option>
@@ -153,6 +153,8 @@
                                             data-duration="{{ $subject->duration }}"
                                             data-school_id="{{ $subject->school_id }}" data-bs-toggle="modal"
                                             data-bs-target="#updateSubjectModal">Edit</button>
+                                        <a href="{{ route('management.delete.subject', $subject->id) }}"
+                                            class="btn btn-danger btn-sm" title="delete" id="permanentDelete">Delete</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -232,7 +234,7 @@
 
                             <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="" class="form-label">Subject question uploader</label>
+                                    <label for="" class="form-label">Subject teacher</label>
                                     <select class="form-select" id="teacher" name="teacher_id" required>
                                         <option selected disabled value="">Choose...</option>
                                         <option value="0">Administrator</option>

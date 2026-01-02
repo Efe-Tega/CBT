@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('student_record_scores', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Subject::class);
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Subject::class)->constrained()->cascadeOnDelete();
             $table->integer('class_id')->nullable();
             $table->integer('exam_id')->nullable();
             $table->integer('term_id')->nullable();
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->integer('total_questions')->nullable();
             $table->integer('correct_answer')->nullable();
             $table->decimal('score_percentage', 5, 2)->nullable();
-            // $table->integer('graded_by')->nullable();
             $table->timestamps();
         });
     }

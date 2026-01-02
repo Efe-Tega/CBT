@@ -59,6 +59,7 @@ Route::middleware('auth:admin,teacher')->group(function () {
         // Subject Management
         Route::controller(SubjectManagement::class)->group(function () {
             Route::get('/subjects', 'viewSubjects')->name('subjects');
+            Route::get('/delete/subject/{id}', 'deleteSubject')->name('delete.subject');
 
             Route::post('/add/subject', 'addSubject')->name('add.subject');
             Route::post('/update/school_subject', 'updateSchoolSubject')->name('update.school_subject');

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->enum('title', ['CA', 'Exam']);
             $table->integer('total_marks')->nullable();
+            $table->enum('status', ['active', 'disable']);
             $table->timestamps();
         });
     }
