@@ -63,13 +63,23 @@ class QuestionsController extends Controller
     {
         $subject = Subject::find($id);
         $questions = Question::where('subject_id', $id)->get();
-        $instructions = Instruction::latest()->get();
+        $instructions = Instruction::where('subject_id', $id)->get();
 
         return view('backend.questions.questions-page', [
             'questions' => $questions,
             'subject' => $subject,
             'instructions' => $instructions,
         ]);
+    }
+
+    public function addQuestions(Request $request, $id)
+    {
+        $subject = Subject::find($id);
+        $instructions = Instruction::where('subject_id', $id)->get();
+        $questions = Question::where('subject_id', $id)->get();
+        $totalQues = count($questions);
+
+        return view('backend.questions.add-question', compact('subject', 'instructions', 'totalQues'));
     }
 
     public function storeQuestion(Request $request)
@@ -80,6 +90,7 @@ class QuestionsController extends Controller
             'correct_answer' => 'required|string',
             'instruction_id' => 'nullable|exists:instructions,id',
             'instruction_text' => 'nullable|string',
+            'marks' => 'required',
         ]);
 
         try {
@@ -87,6 +98,7 @@ class QuestionsController extends Controller
 
             if (!empty($request->instruction_text)) {
                 $instruction = Instruction::create([
+                    'subject_id' => $request->subject_id,
                     'text' => $request->instruction_text,
                 ]);
                 $instructionId = $instruction->id;
@@ -94,7 +106,7 @@ class QuestionsController extends Controller
                 $instructionId = $request->instruction_id;
             };
 
-            $question = Question::create([
+            Question::create([
                 'subject_id' => $request->subject_id,
                 'instruction_id' => $instructionId,
                 'question_text' => $request->question_text,
@@ -102,26 +114,36 @@ class QuestionsController extends Controller
                 'option_b' => $request->option_b,
                 'option_c' => $request->option_c,
                 'option_d' => $request->option_d,
+                'option_e' => $request->option_e,
                 'correct_answer' => $request->correct_answer,
                 'is_visible' => true,
+                'marks' => $request->marks,
                 'created_at' => Carbon::now(),
             ]);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Question added successfully',
-                'data' => $question->load('instruction')
-            ]);
+            $notification = array(
+                'message' => 'Question added',
+                'alert-type' => 'success'
+            );
+
+            return redirect()->back()->with($notification);
         } catch (\Exception $e) {
-            return response()->json([
+            return redirect()->back()->with([
                 'message' => 'Something went wrong!',
-                'error' => $e->getMessage(),
-            ], 500);
+                'alert-type' => 'error',
+            ]);
         }
     }
 
-    public function updateQuestion(Request $request, $id)
+    public function editQuestion(Request $request, $id)
     {
+        $question = Question::find($id);
+        return view('backend.questions.edit-question', compact('question',));
+    }
+
+    public function updateQuestion(Request $request)
+    {
+        $id = $request->quesiton_id;
 
         if ($request->filled('instruction_text')) {
             if ($request->filled('instruction_id')) {
@@ -146,18 +168,39 @@ class QuestionsController extends Controller
             'option_b' => $request->option_b,
             'option_c' => $request->option_c,
             'option_d' => $request->option_d,
+            'option_e' => $request->option_e,
+            'marks' => $request->marks,
             'correct_answer' => $request->correct_answer,
         ]);
 
-        return response()->json([
+        $notification = array(
             'message' => 'Question updated successfully!',
-            'data' => $question->fresh()->load('instruction'),
-        ]);
+            'alert-type' => 'success'
+        );
+
+        return redirect()->back()->with($notification);
     }
 
     public function deleteQuestion($id)
     {
         Question::find($id)->delete();
         return redirect()->back();
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        if (!$request->ids || count($request->ids) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No questions selected'
+            ]);
+        }
+
+        Question::whereIn('id', $request->ids)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Selected questions deleted'
+        ]);
     }
 }

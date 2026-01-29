@@ -65,7 +65,7 @@
             </div> <!-- end col -->
 
             <!--Assessment Setup -->
-            <div class="col-xl-6">
+            {{-- <div class="col-xl-6">
                 <div class="card border border-primary">
                     <div class="card-body">
                         <h4 class="card-title text-secondary mb-4">Current Assessment Type => <span class="text-dark"
@@ -94,7 +94,7 @@
                     </div>
                 </div>
                 <!-- end card -->
-            </div> <!-- end col -->
+            </div> <!-- end col --> --}}
 
             <!--Session Setup -->
             <div class="col-xl-6">

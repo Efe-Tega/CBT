@@ -54,8 +54,8 @@
                             <span>Student Management</span>
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
-                            <li><a href="{{ route('management.subject.score') }}">Subject scores</a></li>
-                            <li><a href="{{ route('management.performance') }}">Academic Scoresheet</a></li>
+                            <li><a href="{{ route('management.subject.score') }}">Export Subject scores</a></li>
+                            {{-- <li><a href="{{ route('management.performance') }}">Academic Scoresheet</a></li> --}}
                             <li><a href="{{ route('management.enrollment') }}">Student Enrollment</a></li>
                         </ul>
                     </li>

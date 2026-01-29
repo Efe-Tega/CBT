@@ -71,7 +71,6 @@ class StudentManagement extends Controller
         return view('backend.students.academic-performance', compact(
             'terms',
             'years',
-            'exams',
             'classes',
             'classId',
             'subjects',
@@ -82,58 +81,66 @@ class StudentManagement extends Controller
 
     public function subjectScores(Request $request)
     {
-        if ($request->isMethod('post')) {
-            $request->validate([
-                'class_id' => 'required',
-                'subject_id' => 'required',
-                'exam_id' => 'required',
-                'term_id' => 'required',
-                'academic_year' => 'required',
-            ], [
-                'class_id.required' => 'Please select a class',
-                'subject_id.required' => 'Please select subject',
-                'exam_id.required' => 'Please select assessment',
-                'term_id.required' => 'Please select a term',
-                'academic_year.required' => 'Please select academic',
-            ]);
+        try {
+            if ($request->isMethod('post')) {
+                $request->validate([
+                    'class_id' => 'required',
+                    'subject_id' => 'required',
+                    'term_id' => 'required',
+                    'academic_year' => 'required',
+                ], [
+                    'class_id.required' => 'Please select a class',
+                    'subject_id.required' => 'Please select subject',
+                    'term_id.required' => 'Please select a term',
+                    'academic_year.required' => 'Please select academic',
+                ]);
+            }
+
+            $classes = SchoolClass::all();
+            $terms = AcademicTerm::all();
+            $years = AcademicYear::all();
+
+            // Defaults
+            $classId = $request->class_id ?? 0;
+            $subjectId = $request->subject_id ?? null;
+            $term = $request->term_id ?? null;
+            $year = $request->academic_year ?? null;
+            $exam = Exam::findOrFail(2)->id;
+
+            $subjects = collect();
+            $subjectRecords = collect();
+
+            if ($classId && $subjectId && $term && $year && $exam) {
+                $subjects = Subject::where('class_id', $classId)->get();
+
+                $subjectRecords = StudentRecordScore::with(['user', 'subject'])
+                    ->where('class_id', $classId)
+                    ->where('subject_id', $subjectId)
+                    ->where('term_id', $term)
+                    ->where('year_id', $year)
+                    ->where('exam_id', $exam)
+                    ->get();
+
+                if ($subjectRecords->isEmpty()) {
+                    throw new \Exception('No matching records found.');
+                }
+            }
+
+            return view('backend.students.subject-scores', compact(
+                'classes',
+                'terms',
+                'years',
+                'subjectRecords',
+                'classId',
+                'subjects',
+            ));
+        } catch (\Throwable $e) {
+            return back()
+                ->withErrors([
+                    'general' => $e->getMessage() ?: 'Something went wrong. Please try again.'
+                ])
+                ->withInput();
         }
-
-        $classes = SchoolClass::all();
-        $terms = AcademicTerm::all();
-        $years = AcademicYear::all();
-        $exams = Exam::all();
-
-        // Defaults
-        $classId = $request->class_id ?? 0;
-        $subjectId = $request->subject_id ?? null;
-        $term = $request->term_id ?? null;
-        $year = $request->academic_year ?? null;
-        $exam = $request->exam_id ?? null;
-
-        $subjects = collect();
-        $subjectRecords = collect();
-
-        if ($classId && $subjectId && $term && $year && $exam) {
-            $subjects = Subject::where('class_id', $classId)->get();
-
-            $subjectRecords = StudentRecordScore::with(['user', 'subject'])
-                ->where('class_id', $classId)
-                ->where('subject_id', $subjectId)
-                ->where('term_id', $term)
-                ->where('year_id', $year)
-                ->where('exam_id', $exam)
-                ->get();
-        }
-
-        return view('backend.students.subject-scores', compact(
-            'classes',
-            'exams',
-            'terms',
-            'years',
-            'subjectRecords',
-            'classId',
-            'subjects',
-        ));
     }
 
     public function exportSubjectScores(Request $request)
@@ -157,7 +164,7 @@ class StudentManagement extends Controller
 
         // Title
         $sheet->setCellValue('A1', 'Student Result Report');
-        $sheet->mergeCells('A1:H1');
+        $sheet->mergeCells('A1:M1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -169,11 +176,16 @@ class StudentManagement extends Controller
             'Middle Name',
             'Registration Number',
             'Subject',
+            'Term',
+            'Year',
+            'Type',
+            'Objective',
+            'Theory',
             'Score',
             'Total'
         ], null, 'A3');
 
-        $sheet->getStyle('A3:G3')->applyFromArray([
+        $sheet->getStyle('A3:L3')->applyFromArray([
             'font' => ['bold' => true],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
@@ -198,8 +210,14 @@ class StudentManagement extends Controller
                 $student->middlename ?? '',
                 $student->registration_number ?? '',
                 $record->subject->name ?? 'N/A',
-                $record->correct_answer ?? 0,
-                $record->total_questions ?? 0,
+                $record->term->name ?? 'N/A',
+                $record->year->name ?? 'N/A',
+                $record->exam->title ?? 'N/A',
+                $record->correct_answer,
+                '',
+                '',
+                $record->exam->total_marks ?? 0,
+
             ], null, 'A' . $row);
 
             $row++;

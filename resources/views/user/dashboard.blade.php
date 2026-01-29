@@ -24,7 +24,16 @@
         </div>
     </header>
 
+    @php
+        $examInfo = App\Models\ExamSetting::find(1);
+    @endphp
+
     <main class="max-w-7xl mx-auto px-4 py-6">
+        <div class="mb-5">
+            <h1 class="text-lg font-semibold leading-tight">{{ $examInfo->term->name }} Examination
+            </h1>
+            <div class="text-sm text-slate-600">{{ $examInfo->year->name }}</div>
+        </div>
         <!-- Card grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <!-- Card component -->

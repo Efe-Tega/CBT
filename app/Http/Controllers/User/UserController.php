@@ -47,8 +47,11 @@ class UserController extends Controller
 
         $existingSession = ExamSession::where('user_id', $student->id)
             ->where('subject_id', $subj_id)
-            ->where('status', 'in_progress')
             ->first();
+
+        if ($existingSession && $existingSession->status === 'completed') {
+            return redirect()->back();
+        }
 
         if (!$existingSession) {
             $startTime = now();

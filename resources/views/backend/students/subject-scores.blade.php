@@ -28,6 +28,12 @@
                 <div class="card-body">
                     <h4 class="card-title mb-3">Get Students Subject Scores</h4>
 
+                    @if ($errors->has('general'))
+                        <div class="alert alert-danger">
+                            {{ $errors->first('general') }}
+                        </div>
+                    @endif
+
                     <form class="g-2 align-items-center" action="{{ route('management.subject.score') }}" method="POST">
                         @csrf
 
@@ -65,25 +71,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <div class="input-group mb-sm-0">
-                                    <span class="input-group-text">Assessment</span>
-                                    <select class="form-select" id="exam_id" name="exam_id">
-                                        <option selected disabled>Choose ...</option>
-                                        @foreach ($exams as $type)
-                                            <option value="{{ $type->id }}"
-                                                {{ old('exam_id') == $type->id ? 'selected' : '' }}>
-                                                {{ $type->title }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @error('exam_id')
-                                    <span class="text-danger" role="alert">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <div class="input-group mb-sm-0">
                                     <span class="input-group-text">Term</span>
                                     <select class="form-select" id="term_id" name="term_id">
@@ -101,7 +89,7 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <div class="input-group mb-sm-0">
                                     <span class="input-group-text">Session</span>
                                     <select class="form-select" id="academic_year" name="academic_year">
@@ -162,7 +150,7 @@
                             @endif
                         </div>
 
-                        <x-responsive-table :columns="array_merge(['S/N', 'Student Name', 'Registration No', 'Type', 'Score', 'Total'])">
+                        <x-responsive-table :columns="array_merge(['S/N', 'Student Name', 'Registration No', 'Type', 'Score'])">
 
                             @foreach ($subjectRecords as $index => $record)
                                 @php
@@ -179,7 +167,7 @@
                                         </td>
                                         <td>{{ $record->exam->title }}</td>
                                         <td>{{ $record->correct_answer }} </td>
-                                        <td>{{ $record->total_questions }}</td>
+                                        {{-- <td>{{ $record->total_questions }}</td> --}}
                                     </tr>
                                 @endif
                             @endforeach

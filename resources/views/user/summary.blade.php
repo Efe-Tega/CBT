@@ -58,7 +58,7 @@
         <!-- Actions area -->
         <div class="mt-6 bg-white border border-slate-200 rounded p-4">
             <div class="flex items-center justify-between mb-4">
-                <button onclick="window.history.back()"
+                <button onclick="sessionStorage.setItem('forceReload','1'); window.history.back();"
                     class="inline-flex items-center justify-center text-xs font-semibold uppercase tracking-wide btn-muted rounded px-4 py-2">Return
                     to attempt</button>
 

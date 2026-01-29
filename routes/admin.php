@@ -22,11 +22,14 @@ Route::middleware('auth:admin,teacher')->group(function () {
         Route::controller(QuestionsController::class)->group(function () {
             Route::get('/questions', 'manageQuestions')->name('questions');
             Route::get('/questions/{id}', 'questionsPage')->name('questions.page');
+            Route::get('/add/questions/{id}', 'addQuestions')->name('add.questions');
+            Route::get('/edit/question/{id}', 'editQuestion')->name('edit.question');
             Route::get('/delete/question/{id}', 'deleteQuestion')->name('delete.question');
+            Route::delete('/questions/bulk-delete', 'bulkDelete')->name('bulk.delete');
 
             Route::post('/subjects/{id}/toggle', 'toggleStatus')->name('subjects.toggle');
             Route::post('/store/question', 'storeQuestion')->name('store.question');
-            Route::post('/questions/update/{id}', 'updateQuestion')->name('update.question');
+            Route::post('/update/question', 'updateQuestion')->name('update.question');
             Route::post('/question/{id}/toggle', 'toggleQuestionVisibility')->name('question.toggle');
         });
 

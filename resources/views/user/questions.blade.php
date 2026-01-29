@@ -105,7 +105,7 @@
             const prevInstructionId = index > 0 ? questions[index - 1].instruction_id : null;
             let instructionHTML = "";
 
-            if (q.instruction && q.instruction.id !== prevInstructionId) {
+            if (q.instruction) {
                 instructionHTML = `
                 <div class="p-3 mb-3 border border-slate-300 bg-slate-50 rounded">
                 <strong class="block text-slate-700">Instruction:</strong>
@@ -390,9 +390,20 @@
             window.location.href = url.toString();
         });
 
-        // Initialize
-        loadProgress().then(() => {
-            renderQuestion(currentIndex);
-        });
+        function initPage() {
+            // Initialize
+            loadProgress().then(() => {
+                renderQuestion(currentIndex);
+            });
+        }
+
+        window.addEventListener("DOMContentLoaded", initPage);
+        window.addEventListener("pageshow", (event) => {
+            if (sessionStorage.getItem('forceReload') === '1') {
+                sessionStorage.removeItem('forceReload');
+                window.location.reload();
+            }
+        })
+
     });
 </script>

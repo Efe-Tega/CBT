@@ -26,6 +26,7 @@ class StudentExamController extends Controller
 
         $question = Question::find($questionId);
         $is_correct = $answer === $question->correct_answer;
+        $scoreAwarded = $is_correct ? $question->marks : 0;
 
         StudentAnswer::updateOrCreate([
             'user_id' => $studentId,
@@ -34,6 +35,7 @@ class StudentExamController extends Controller
         ], [
             'selected_answer' => $answer,
             'is_correct' => $is_correct,
+            'score_awarded' => $scoreAwarded,
         ]);
 
         return response()->json(['success' => true]);
@@ -72,8 +74,7 @@ class StudentExamController extends Controller
         $totalCorrectAnswers = StudentAnswer::where('user_id', $studentId)
             ->where('exam_id', $examId)
             ->where('finalized', true)
-            ->where('is_correct', 1)
-            ->count();
+            ->sum('score_awarded');
 
 
         // 5️⃣ Optionally calculate percentage or score

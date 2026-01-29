@@ -22,8 +22,10 @@ return new class extends Migration
             $table->text('option_b')->nullable();
             $table->text('option_c')->nullable();
             $table->text('option_d')->nullable();
+            $table->text('option_e')->nullable();
             $table->char('correct_answer', 1)->nullable();
             $table->boolean('is_visible')->default(false);
+            $table->integer('marks')->nullable();
             $table->timestamps();
         });
     }

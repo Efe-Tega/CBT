@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignIdFor(Question::class);
             $table->char('selected_answer', 1)->nullable();
             $table->boolean('is_correct')->default(0);
+            $table->integer('score_awarded')->nullable();
             $table->boolean('finalized')->default(0)->comment("Whether submission is complete");
             $table->timestamps();
         });
